@@ -1,3 +1,5 @@
+// src/app/admin/login/page.tsx
+
 'use client';
 
 import React, { useState } from 'react';
@@ -6,6 +8,7 @@ import LoginSlider from '@/components/login-components/LoginSlider';
 import LoginForm from '@/components/login-components/LoginForm';
 import RegisterForm from '@/components/login-components/RegisterForm';
 import ForgotPasswordForm from '@/components/login-components/ForgotPasswordForm';
+import { useAuth } from '@/context/AuthContext';
 import { loginUser } from '@/lib/users';
 
 const colors = {
@@ -20,6 +23,7 @@ const views = {
 
 const Page = () => {
   const router = useRouter();
+  const { login } = useAuth();
   const [currentView, setCurrentView] = useState(views.LOGIN);
 
   // estados comuns
@@ -55,23 +59,13 @@ const Page = () => {
     setLoading(true);
     const user = loginUser(number, password);
     if (user) {
+      login({ email: user.numero, role: user.role });
       setMessage(`Bem-vindo, ${user.role}`);
-
-      // Redireciona conforme o role do usuário
-      switch (user.role) {
-        case "Administrador":
-          router.push("/admin/dashboard");
-          break;
-        case "Comprador":
-          router.push("/comprador/home");
-          break;
-        case "Cliente":
-          router.push("/cliente/home");
-          break;
-        default:
-          router.push("/"); // fallback
-          break;
-      }
+      
+      // 🚨 PONTO DE MUDANÇA 🚨
+      // Redireciona todos os usuários para o dashboard
+      router.push("/admin/dashboard");
+      
     } else {
       setMessage("Número ou senha inválidos");
     }

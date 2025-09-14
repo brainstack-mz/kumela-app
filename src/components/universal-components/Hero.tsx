@@ -6,7 +6,6 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Paleta de cores para o botão
 const colors = {
   primaryGreen: "#4CAF50",
   darkGreen: "#2E7D32",
@@ -14,50 +13,48 @@ const colors = {
     white: "#FFFFFF",
 };
 
-// Dados para os slides do hero
+// Dados para os slides do hero com texto simplificado
 const slides = [
   {
-    subtitle: "Dificuldades em vender seus produtos agrícolas?",
-    title: "MOZAGRO: A Conexão Direta ao Mercado!",
+    subtitle: "Dificuldades para vender?",
+    title: "Venda Mais e Melhor Com a MOZAGRO!",
     description:
-      "Nossa plataforma liga produtores a compradores, impulsionando suas vendas e garantindo que seus produtos frescos cheguem a mais pessoas. Expanda seu negócio com facilidade e segurança.",
+      "A MOZAGRO é a sua loja online. Ligue-se a quem quer comprar e garanta que os seus produtos frescos chegam a mais pessoas.",
     image: "/assets/img1.jpeg",
   },
   {
-    subtitle: "Alcance Mais Clientes em Moçambique",
-    title: "Venda Mais, Com Menos Esforço",
+    subtitle: "Conecte-se a mais pessoas",
+    title: "Venda Rápido, Sem Complicação",
     description:
-      "Com a MOZAGRO, seus produtos ganham visibilidade nacional. Nossa interface intuitiva facilita a gestão de vendas e a comunicação com os compradores.",
+      "Nossa plataforma ajuda-o a vender sem sair de casa. É fácil e seguro. Anuncie seus produtos e veja o seu negócio crescer.",
     image: "/assets/img2.jpeg",
   },
   {
-    subtitle: "Cultive seu Sucesso Conosco",
-    title: "Soluções Digitais para o Agricultor Moderno",
+    subtitle: "Um parceiro para o seu futuro",
+    title: "Cultive o Sucesso com a Gente",
     description:
-      "Oferecemos ferramentas para otimizar sua produção, gerenciar pedidos e escalar seu agronegócio. Junte-se à comunidade que está revolucionando a agricultura moçambicana.",
+      "Junte-se à MOZAGRO. Nós damos as ferramentas para o seu negócio crescer, gerir os seus pedidos e vender mais. Simples e rápido.",
     image: "/assets/img4.jpeg",
   },
   {
-    subtitle: "Colha os Frutos do Futuro",
-    title: "Inovação e Crescimento no Agronegócio",
+    subtitle: "Seu produto no mercado",
+    title: "O Seu Negócio Está no Nosso Mercado",
     description:
-      "A MOZAGRO é seu parceiro estratégico para inovar e crescer. Conecte-se, aprenda e prospere em um mercado dinâmico e cheio de oportunidades.",
+      "Com a MOZAGRO, o seu produto ganha um lugar no mercado digital. Conecte-se com mais clientes e venda mais. É fácil e seguro.",
     image: "/assets/img3.jpeg",
   },
 ];
 
-// Variantes de animação para o conteúdo de TEXTO (baixo para cima)
 const textVariants = {
   initial: { opacity: 0, y: 50 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: -50 },
 };
 
-// Variantes de animação para a IMAGEM (direita para esquerda)
 const imageVariants = {
-  initial: { opacity: 0, x: 100 }, // Começa à direita
-  animate: { opacity: 1, x: 0 }, // Move para a posição original
-  exit: { opacity: 0, x: -100 }, // Sai para a esquerda
+  initial: { opacity: 0, x: 100 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -100 },
 };
 
 const Hero = () => {
@@ -65,12 +62,10 @@ const Hero = () => {
   const buttonLink = "/admin/login";
 
   useEffect(() => {
-    // Intervalo para a mudança automática dos slides
     const autoSlideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 7000); // 7 segundos
+    }, 7000);
 
-    // Função de limpeza
     return () => {
       clearInterval(autoSlideInterval);
     };
@@ -81,10 +76,8 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="relative py-3 font-sans flex items-center justify-center overflow-hidden bg-white"
+      className="relative py-2.4 font-sans flex items-center justify-center overflow-hidden bg-white"
     >
-
-      {/* Fundo com Figuras Geométricas (para desktop) */}
       <div className="hidden md:block absolute inset-0">
         <svg className="w-full h-full" viewBox="0 0 1440 800" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Círculo maior - canto superior direito */}
@@ -119,20 +112,18 @@ const Hero = () => {
           />
         </svg>
       </div>
-      {/* Conteúdo Principal do Hero */}
       <div
-        className="relative w-full max-w-7xl mx-auto flex flex-col-reverse 
+        className="relative w-full max-w-7xl mx-auto flex flex-col-reverse
         md:flex-row items-center justify-center px-4 md:px-8 gap-8 py-8"
       >
-        {/* Lado Esquerdo - Conteúdo do Texto e Botão */}
         <div
-          className="w-full md:w-1/2 flex flex-col justify-center 
+          className="w-full md:w-1/2 flex flex-col justify-center
           text-center md:text-left pt-8 md:pt-0"
         >
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlideData.title + "-text"}
-              variants={textVariants} // Usando as variantes de texto
+              variants={textVariants}
               initial="initial"
               animate="animate"
               exit="exit"
@@ -155,13 +146,12 @@ const Hero = () => {
 
           <Link
             href={buttonLink}
-            className="inline-flex items-center self-center md:self-start px-8 py-4 
-            text-base md:text-xl font-bold rounded-full transition-all duration-300 
+            className="inline-flex items-center self-center md:self-start px-8 py-4
+            text-base md:text-xl font-bold rounded-full transition-all duration-300
             ease-in-out transform hover:scale-105 gap-2"
-            style={{ 
- 
+            style={{
               backgroundColor: colors.accentOrange,
-              color: colors.white, 
+              color: colors.white,
               border: `2px solid ${colors.accentOrange}`
             }}
           >
@@ -169,7 +159,6 @@ const Hero = () => {
           </Link>
         </div>
 
-        {/* Lado Direito - Card Retangular Vertical com a Imagem do Slide */}
         <div className="relative w-full md:w-1/2 flex items-center justify-center p-6 mt-0 md:mt-0">
           <div
             className="relative w-full max-w-[900px] aspect-[5/4] rounded-2xl overflow-hidden bg-white"
@@ -180,7 +169,7 @@ const Hero = () => {
                 src={currentSlideData.image}
                 alt={currentSlideData.title}
                 className="w-full h-full object-cover"
-                variants={imageVariants} // Usando as novas variantes de imagem
+                variants={imageVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
@@ -189,8 +178,7 @@ const Hero = () => {
             </AnimatePresence>
           </div>
 
-          {/* Indicadores */}
-          <div className="absolute -bottom-8 md:-bottom-10 flex space-x-3">
+          <div className="absolute -bottom-9 md:-bottom-6 flex space-x-3">
             {slides.map((_, index) => (
               <button
                 key={index}

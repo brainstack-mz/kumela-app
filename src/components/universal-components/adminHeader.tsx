@@ -1,11 +1,13 @@
- // components/universal-components/AdminHeader.tsx
+// src/components/universal-components/AdminHeader.tsx
+
 "use client";
 
-import { Search, Bell, Settings, User, Menu, ChevronLeft } from "lucide-react";
+import { Search, Bell, Settings, User, Menu, ChevronLeft, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 interface AdminHeaderProps {
   onMenuClick: () => void;
@@ -15,6 +17,7 @@ interface AdminHeaderProps {
 export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, logout } = useAuth();
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -29,10 +32,11 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
+    // Apenas corrigi este ponto e vírgula (;)
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const userProfileImageUrl = "/assets/default-user-avatar.png"; 
+  const userProfileImageUrl = "/assets/default-user-avatar.png";
 
   const getPageTitle = () => {
     if (pathname.startsWith("/admin/contacts")) return "Gestão de Contactos";
@@ -44,28 +48,33 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
 
   const handleLogout = () => {
     setShowLogoutModal(false);
-    setDropdownOpen(false); // fecha dropdown ao sair
+    setDropdownOpen(false);
+    logout();
     router.push("/admin/login");
   };
+
+  const showMenuButton = user?.role === "Administrador";
 
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full right-0 
-        h-16 bg-white shadow-md flex items-center justify-between px-6
+        className={`sticky top-0 z-40 w-full right-0
+        h-18 bg-white shadow-md flex items-center justify-between px-6
         transition-all duration-300 ease-in-out ${
-          isSidebarOpen
+          isSidebarOpen && showMenuButton
             ? "md:left-64 w-[calc(100%-16rem)]"
             : "md:left-20 w-[calc(100%-5rem)]"
         }`}
       >
         <div className="flex items-center gap-4">
-          <button
-            onClick={onMenuClick}
-            className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
-          >
-            {isSidebarOpen ? <ChevronLeft size={24} /> : <Menu size={24} />}
-          </button>
+          {showMenuButton && (
+            <button
+              onClick={onMenuClick}
+              className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+            >
+              {isSidebarOpen ? <ChevronLeft size={24} /> : <Menu size={24} />}
+            </button>
+          )}
           <h1 className="text-xl font-bold text-[#3f7fff] tracking-wide hidden md:block">
             {getPageTitle()}
           </h1>

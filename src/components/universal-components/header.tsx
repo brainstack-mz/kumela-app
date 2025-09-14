@@ -247,7 +247,7 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Carrinho */}
+          {/* Carrinho 
           <Link
             href="/kindness"
             className="relative flex items-center gap-2 hover:text-green-700 transition-colors"
@@ -258,11 +258,12 @@ export default function Header() {
                 className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-white text-[0.65rem] font-bold animate-bounce"
                 style={{ backgroundColor: colors.accentOrange }}
               >
-                1
+                3
               </span>
             </div>
             <span className="text-sm">Carrinho</span>
           </Link>
+          */}
         </div>
 
         {/* Mobile Actions */}
@@ -275,6 +276,7 @@ export default function Header() {
             href="/kindness"
             className="relative flex items-center hover:text-green-700 transition-colors"
           >
+               {/* Carrinho Mobile 
             <div className="relative">
               <ShoppingCart size={24} />
               <span
@@ -284,7 +286,9 @@ export default function Header() {
                 3
               </span>
             </div>
+            */}
           </Link>
+          
 
           {/* Botão Mobile */}
           <button onClick={toggleMobileMenu} className="hover:text-green-700">
@@ -403,6 +407,7 @@ export default function Header() {
             <User size={24} style={{ color: colors.textDark }} />
             <span className="font-bold text-xl">Entrar / Registar</span>
           </Link>
+                {/* Seção de Ações com separador 
           <Link
             href="/kindness"
             className="flex items-center gap-2 py-4 px-4 rounded-lg font-medium hover:bg-gray-100 transition-colors"
@@ -411,6 +416,7 @@ export default function Header() {
             <ShoppingCart size={24} style={{ color: colors.textDark }} />
             <span className="text-xl">Carrinho</span>
           </Link>
+          */}
         </div>
       </div>
     </header>
