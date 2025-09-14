@@ -1,31 +1,18 @@
 // src/app/admin/dashboard/page.tsx
+
 "use client";
 
 import { Home, Users, Package, Clock, ShoppingBag, BarChartBig, TrendingUp, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 import AdminRouteProtector from "@/components/AdminRouteProtector";
 import { useAuth } from "@/context/AuthContext";
-import MetricCard from "@/components/MetricCard";
 import Link from "next/link";
+import ViewContainer from "@/components/universal-components/ViewContainer"; // Importa o ViewContainer
 
-// Dados simulados. Substitua por sua lógica real de API.
+// Dados simulados (ainda podem ser úteis para a seção de atividade)
 const mockData = {
-  totalFarmers: 120,
-  newFarmersThisWeek: 15,
-  totalProducts: 450,
-  newAdsToday: 10,
-  pendingOrders: 25,
-  totalSalesValue: "55,000.00 MZN",
+  // ... (manter os dados para a seção de atividade)
 };
-
-// Dados de exemplo para o gráfico (substitua por dados reais)
-const salesData = [
-  { month: 'Jan', value: 1200 },
-  { month: 'Fev', value: 1500 },
-  { month: 'Mar', value: 1800 },
-  { month: 'Abr', value: 1650 },
-  { month: 'Mai', value: 2500 },
-];
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -38,62 +25,42 @@ export default function Dashboard() {
 
   return (
     <AdminRouteProtector>
-      <motion.div
-        variants={fadeIn}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="bg-gray-50 rounded-2xl shadow-md p-6 lg:p-12 font-sans overflow-hidden"
-      >
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Ola</h1>
-        <p className="text-lg text-gray-500 mb-8">Bem-vindo(a), {user?.email.split('@')[0]}!</p>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <MetricCard
-            title="Total de Agricultores"
-            value={mockData.totalFarmers}
-            subtext={`${mockData.newFarmersThisWeek} novos esta semana`}
-            icon={Users}
-            bgColor="#2E7D32" 
-            link="/admin/farmers"
-          />
-          <MetricCard
-            title="Produtos Anunciados"
-            value={mockData.totalProducts}
-            subtext={`${mockData.newAdsToday} novos anúncios hoje`}
-            icon={Package}
-            bgColor="#1976D2"
-            link="/admin/products/ads"
-          />
-          <MetricCard
-            title="Pedidos Pendentes"
-            value={mockData.pendingOrders}
-            subtext="Aja agora para evitar atrasos"
-            icon={Clock}
-            bgColor="#FF9800" 
-            link="/admin/products/orders"
-          />
-          <MetricCard
-            title="Receita Total"
-            value={mockData.totalSalesValue}
-            subtext="Total em vendas concluídas"
-            icon={DollarSign}
-            bgColor="#4CAF50"
-            link="/admin/report"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Seção de Análises e Gráficos */}
-          <div className="bg-white rounded-2xl p-6 shadow-md">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center"><BarChartBig size={24} className="mr-2" /> Vendas e Anúncios Mensais</h2>
-            {/* Aqui você pode renderizar seu componente de gráfico. Ex: */}
-            {/* <SalesChart data={salesData} /> */}
-            <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-              [Placeholder para o gráfico de vendas]
-            </div>
+      <ViewContainer> 
+        <motion.div
+          variants={fadeIn}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="bg-gray-50 rounded-2xl shadow-md p-6 lg:p-12 font-sans overflow-hidden"
+        >
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Painel de Administração</h1>
+          <p className="text-lg text-gray-500 mb-8">Bem-vindo(a), {user?.role.split('@')[0]}! Escolha uma ação:</p>
+          
+          {/* Seção dos Botões de Ação */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+           
+            <Link href="/admin/products/new-ad" passHref>
+              <div className="flex flex-col items-center justify-center p-8 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105 cursor-pointer">
+                <Package size={48} />
+                <span className="mt-4 text-2xl font-semibold">Anunciar</span>
+              </div>
+            </Link>
+            <Link href="/admin/products/orders" passHref>
+              <div className="flex flex-col items-center justify-center p-8 bg-yellow-500 text-white rounded-xl shadow-lg hover:bg-yellow-600 transition-colors duration-300 transform hover:scale-105 cursor-pointer">
+                <Clock size={48} />
+                <span className="mt-4 text-2xl font-semibold">Pedidos Pendentes</span>
+              </div>
+            </Link>
+            <Link href="/admin/products/completed" passHref>
+              <div className="flex flex-col items-center justify-center p-8 bg-green-600 text-white rounded-xl shadow-lg hover:bg-green-700 transition-colors duration-300 transform hover:scale-105 cursor-pointer">
+                <ShoppingBag size={48} />
+                <span className="mt-4 text-2xl font-semibold">Pedidos Concluídos</span>
+              </div>
+            </Link>
           </div>
+
+          <hr className="my-8 border-gray-200" />
 
           {/* Seção de Atividade Recente */}
           <div className="bg-white rounded-2xl p-6 shadow-md">
@@ -116,8 +83,8 @@ export default function Dashboard() {
               </li>
             </ul>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+      </ViewContainer>
     </AdminRouteProtector>
   );
 }

@@ -1,12 +1,13 @@
+// src/components/universal-components/Sidebar.tsx
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, FileText, Phone, BarChartBig, ChevronDown, LogOut, CheckCircle, Clock, FileBadge, UserCog, Package, Truck, ShoppingBag, Leaf, BookOpen } from "lucide-react"; 
+import { Home, Users, BarChartBig, ShoppingBag, Leaf, BookOpen, Truck, LogOut, Package, CheckCircle, Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
-import { USERS } from "@/lib/users";
+import { USERS } from "@/lib/users"; 
 
 interface SidebarProps {
   isOpen: boolean;
@@ -14,56 +15,29 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
-  const [isProductsDropdownOpen, setIsProductsDropdownOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    if (pathname.startsWith("/admin/products")) {
-      setIsProductsDropdownOpen(true);
-    }
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
-  }, [pathname]);
+  }, []);
 
   const getNavItems = (role: string) => {
-    const directorItems = [
-      { name: "Início", href: "/admin/dashboard", icon: Home, subItems: [] },
-      { name: "Marketplace", href: "/admin/marketplace", icon: ShoppingBag, subItems: [] },
-      { name: "Gestão de Produtos", href: "/admin/products", icon: Package,
-        subItems: [
-          { name: "Anúncios", href: "/admin/products/ads", icon: FileBadge, iconColor: "#ff9900" },
-          { name: "Pedidos", href: "/admin/products/orders", icon: Clock, iconColor: "#007bff" },
-          { name: "Concluídos", href: "/admin/products/completed", icon: CheckCircle, iconColor: "#28a745" },
-        ]
-      },
-      { name: "Logística", href: "/admin/logistics", icon: Truck, subItems: [] },
-      { name: "Gestão de Agricultores", href: "/admin/farmers", icon: Leaf, subItems: [] },
-      { name: "Gestão de Usuários", href: "/admin/users", icon: Users, subItems: [] },
-      { name: "Relatórios", href: "/admin/report", icon: BarChartBig, subItems: [] },
+    const adminItems = [
+      { name: "Início", href: "/admin/dashboard", icon: Home },
+      { name: "Marketplace", href: "/admin/marketplace", icon: ShoppingBag },
+      { name: "Logística", href: "/admin/logistics", icon: Truck },
+      { name: "Gestão de Agricultores", href: "/admin/farmers", icon: Leaf },
+      { name: "Gestão de Usuários", href: "/admin/users", icon: Users },
+      { name: "Relatórios", href: "/admin/report", icon: BarChartBig },
     ];
-
-    const employeeItems = [
-      { name: "Início", href: "/admin/dashboard", icon: Home, subItems: [] },
-      { name: "Marketplace", href: "/admin/marketplace", icon: ShoppingBag, subItems: [] },
-      { name: "Gestão de Produtos", href: "/admin/products", icon: Package,
-        subItems: [
-          { name: "Anúncios", href: "/admin/products/ads", icon: FileBadge, iconColor: "#ff9900" },
-          { name: "Pedidos", href: "/admin/products/orders", icon: Clock, iconColor: "#007bff" },
-          { name: "Concluídos", href: "/admin/products/completed", icon: CheckCircle, iconColor: "#28a745" },
-        ]
-      },
-      { name: "Logística", href: "/admin/logistics", icon: Truck, subItems: [] },
-      { name: "Gestão de Agricultores", href: "/admin/farmers", icon: Leaf, subItems: [] },
-      { name: "Relatórios", href: "/admin/report", icon: BarChartBig, subItems: [] },
-    ];
-
-    return role === "Diretor Administrativo" ? directorItems : employeeItems;
+    return role === "Administrador" ? adminItems : [];
   };
 
   const navItems = user ? getNavItems(user.role) : [];
@@ -72,11 +46,15 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
     if (href === "/admin/dashboard") {
       return pathname === href;
     }
-    return pathname.startsWith(href) || pathname.startsWith(href + "/");
+    return pathname.startsWith(href);
   };
 
-  const currentUser = USERS.find(u => u.email === user?.email);
-  const userFullName = currentUser ? currentUser.email.split('@')[0] : 'Usuário';
+  const currentUser = USERS.find(u => u.numero === user?.email);
+  const userNumero = currentUser ? currentUser.numero : 'Usuário';
+
+  if (!user || user.role !== "Administrador") {
+    return null;
+  }
 
   return (
     <>
@@ -104,72 +82,25 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             <ul className="space-y-2 font-medium">
               {navItems.map((item) => (
                 <li key={item.name}>
-                  {item.subItems.length > 0 ? (
-                    <>
-                      <button
-                        onClick={() => {
-                          setIsProductsDropdownOpen(!isProductsDropdownOpen);
-                          if (!isOpen && isMobile) onToggle();
-                        }}
-                        className={`group relative flex items-center w-full text-left p-3 rounded-lg transition-colors duration-200 ${
-                          pathname.startsWith(item.href)
-                            ? "bg-[#6a89cc] text-white shadow-lg"
-                            : "text-gray-700 hover:bg-gray-200"
-                        }`}
-                      >
-                        <item.icon size={20} className="mr-3 flex-shrink-0" />
-                        <span className={`flex-1 transition-opacity duration-300 whitespace-nowrap overflow-hidden ${isOpen ? "opacity-100" : "opacity-0"}`}>
-                          {item.name}
-                        </span>
-                        {isOpen && (
-                          <ChevronDown size={16} className={`flex-shrink-0 transition-transform ${isProductsDropdownOpen ? "rotate-180" : ""}`} />
-                        )}
-                        {!isOpen && (
-                          <span className="absolute left-full ml-4 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            {item.name}
-                          </span>
-                        )}
-                      </button>
-                      <ul className={`mt-2 space-y-1 transition-all duration-300 overflow-hidden ${isProductsDropdownOpen && isOpen ? "max-h-60" : "max-h-0"}`}>
-                        {item.subItems.map((subItem) => (
-                          <li key={subItem.name}>
-                            <Link
-                              href={subItem.href}
-                              onClick={isMobile ? onToggle : undefined}
-                              className={`flex items-center p-2 pl-12 text-sm rounded-lg transition-colors duration-200 ${
-                                isLinkActive(subItem.href) ? "bg-blue-100 text-blue-700" : "hover:bg-gray-200 text-gray-700"
-                              }`}
-                            >
-                              {subItem.icon && <subItem.icon size={16} className="mr-2" style={{ color: subItem.iconColor }} />}
-                              <span className={`transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}>
-                                {subItem.name}
-                              </span>
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      onClick={isMobile ? onToggle : undefined}
-                      className={`group relative flex items-center p-3 rounded-lg transition-colors duration-200 ${
-                        isLinkActive(item.href)
-                          ? "bg-[#6a89cc] text-white shadow-lg"
-                          : "text-gray-700 hover:bg-gray-200"
-                      }`}
-                    >
-                      <item.icon size={20} className="mr-3 flex-shrink-0" />
-                      <span className={`transition-opacity duration-300 whitespace-nowrap overflow-hidden ${isOpen ? "opacity-100" : "opacity-0"}`}>
+                  <Link
+                    href={item.href}
+                    onClick={isMobile ? onToggle : undefined}
+                    className={`group relative flex items-center p-3 rounded-lg transition-colors duration-200 ${
+                      isLinkActive(item.href)
+                        ? "bg-[#6a89cc] text-white shadow-lg"
+                        : "text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    <item.icon size={20} className="mr-3 flex-shrink-0" />
+                    <span className={`transition-opacity duration-300 whitespace-nowrap overflow-hidden ${isOpen ? "opacity-100" : "opacity-0"}`}>
+                      {item.name}
+                    </span>
+                    {!isOpen && (
+                      <span className="absolute left-full ml-4 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         {item.name}
                       </span>
-                      {!isOpen && (
-                        <span className="absolute left-full ml-4 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          {item.name}
-                        </span>
-                      )}
-                    </Link>
-                  )}
+                    )}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -184,17 +115,17 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             >
               <div className="flex items-center space-x-2">
                 <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
-                  {userFullName.charAt(0).toUpperCase()}
+                  {userNumero.charAt(0).toUpperCase()}
                 </div>
                 {isOpen && (
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-800 whitespace-nowrap">{userFullName}</p>
+                    <p className="text-sm font-semibold text-gray-800 whitespace-nowrap">{userNumero}</p>
                     <p className="text-xs text-gray-500 whitespace-nowrap">{user.role}</p>
                   </div>
                 )}
                 {isOpen && (
-                  <button onClick={() => { /* Lógica de logout */ }} className="text-gray-500 hover:text-red-500 transition-colors">
-                  
+                  <button onClick={logout} className="text-gray-500 hover:text-red-500 transition-colors">
+                    <LogOut size={20} />
                   </button>
                 )}
               </div>

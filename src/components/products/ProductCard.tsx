@@ -36,9 +36,7 @@ export default function ProductCard({ product, onPreview }: ProductCardProps) {
           objectFit="cover"
           className="transition-transform duration-300"
         />
-        <div className="absolute bottom-2 right-2 p-2 bg-white/90 rounded-full cursor-pointer">
-          <ShoppingCart size={28} className="text-[#4CAF50]" />
-        </div>
+   
       </div>
       <div className="p-4 flex flex-col justify-between">
         <div>
@@ -47,11 +45,11 @@ export default function ProductCard({ product, onPreview }: ProductCardProps) {
         </div>
         <div className="flex items-center justify-between mt-3">
           <p className="text-xl font-extrabold text-[#2E7D32]">
-            MZN {finalPrice.toFixed(2)}
+            {finalPrice.toFixed(0)} Meticais
           </p>
           {product.discount && (
             <span className="text-sm text-red-700 line-through">
-              MZN {product.price.toFixed(2)}
+              {product.price.toFixed(0)} Meticais
             </span>
           )}
         </div>

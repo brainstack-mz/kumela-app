@@ -93,7 +93,7 @@ export default function ContactsPage() {
             Fale Conosco
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Tem alguma pergunta ou precisa de ajuda? Preencha o formulário ou entre em contato diretamente. Estamos aqui para ajudar a comunidade agrícola.
+            Tem alguma pergunta ou precisa de ajuda? Preencha o formulário ou entre em contato diretamente
           </p>
         </div>
 
@@ -173,8 +173,7 @@ export default function ContactsPage() {
                   <Phone className="text-[#4CAF50] w-6 h-6 flex-shrink-0 mr-4 mt-1" />
                   <div>
                     <h4 className="font-bold text-gray-800">Telefone</h4>
-                    <p className="text-gray-600 text-sm">+258 82 123 4567 - Comercial</p>
-                    <p className="text-gray-600 text-sm">+258 87 987 6543 - Suporte</p>
+                    <p className="text-gray-600 text-sm">+258 87 987 6543 - Central</p>
                   </div>
                 </div>
                 <div className="flex items-start">
