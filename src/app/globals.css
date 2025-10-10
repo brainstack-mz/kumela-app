@@ -16,7 +16,30 @@ html {
   font-family: Arial, Helvetica, sans-serif;
 
   min-height: 100vh;
-  
-  /* Impede que a imagem de fundo se repita (útil para imagens, não para cores) */
+
   background-repeat: no-repeat;
+}
+
+/* Adicione as seguintes regras para que a acessibilidade funcione */
+body.text-enlarged {
+    font-size: 1.2rem; /* Exemplo: aumenta em 20% */
+}
+
+/* Isso garante que títulos e outros textos não fixos aumentem proporcionalmente */
+body.text-enlarged * {
+  line-height: 1.6 !important; 
+}
+
+/* Você pode precisar de regras específicas para classes de texto do Tailwind */
+body.text-enlarged .text-sm {
+    font-size: 1.1rem !important;
+}
+
+body.text-enlarged .text-lg {
+    font-size: 1.5rem !important;
+}
+
+/* Regra de exemplo para títulos: */
+body.text-enlarged h1 {
+  font-size: 3.5rem !important; 
 }

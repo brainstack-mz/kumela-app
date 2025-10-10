@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import Hero from "@/components/universal-components/Hero";
-import Produts from "@/components/universal-components/Products";
-import ContactsPage from "@/components/universal-components/contact";
-import Faq from "@/components/universal-components/Faq";
-import ScrollToTopButton from "@/components/universal-components/ScrollToTopButton";
-import Video from "@/components/universal-components/Viedeo";
+import Hero from "@/components/shared/Hero";
+import Produts from "@/components/shared/Products";
+import ContactsPage from "@/components/shared/contact";
+import Faq from "@/components/shared/Faq";
+import ScrollControls from "@/components/shared/ScrollControls";
+import Video from "@/components/shared/Viedeo";
 
 export default function HomePage() {
   return (
@@ -16,7 +16,7 @@ export default function HomePage() {
 
       {/* Conteúdo principal da página */}
       <div className="relative z-1">
-     <section className="w-full mt-[1px] md:mt-[18px]">
+     <section className="w-full mt-[1px]  md:mt-0">
   <Hero />
 </section>
 
@@ -24,9 +24,10 @@ export default function HomePage() {
         <section id="Produts" className="mt-0 md:mt-0">
           <Produts />
         </section>
-        <section id="faq" className="py-0 md:py-0">
+        <section id="video" className="py-0 md:py-0">
           <Video />
         </section>
+
 
         <section id="contact" className="py-0 md:py-0">
           <ContactsPage />
@@ -37,7 +38,7 @@ export default function HomePage() {
         </section>
       </div>
 
-      <ScrollToTopButton />
+      <ScrollControls />
     </div>
   );
 }
