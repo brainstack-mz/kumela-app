@@ -1,7 +1,7 @@
 // app/admin/report/page.tsx
 "use client";
 
-import ViewContainer from "@/components/universal-components/ViewContainer";
+import ViewContainer from "@/components/user-components/ViewContainer";
 import { motion } from "framer-motion";
 import { BarChart, TrendingUp, Package, Leaf, Truck } from "lucide-react";
 

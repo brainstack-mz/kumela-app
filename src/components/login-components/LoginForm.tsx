@@ -1,12 +1,12 @@
-// src/components/login-components/LoginForm.tsx
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { LoginFormProps } from "@/types/login";
 import { User, Lock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
-const colors = { primaryGreen: "#2E7D32", accentOrange: "#FF9800" }; // Adicionado accentOrange para o OTP
+const colors = { primaryGreen: "#2E7D32", accentOrange: "#FF9800" };
 
 const LoginForm = ({
   number,
@@ -20,22 +20,33 @@ const LoginForm = ({
   setCurrentView,
   views,
 }: LoginFormProps) => {
-  return (
-    <form onSubmit={handleLogin} className="space-y-4">
-      {/* Botão para voltar */}
-      <Link href="/" passHref>
-        <button
-          type="button"
-          className="text-blue-500 hover:underline flex items-center gap-1"
-        >
-          <ArrowLeft size={16} color={colors.primaryGreen} /> Voltar à página inicial
-        </button>
-      </Link>
 
-      {/* Logo e título - Espaçamento ajustado */}
-      <div className="flex flex-col items-center gap-1 mb-4">
+  useEffect(() => {
+    // Garante que inputs fiquem vazios ao abrir
+    setNumber("");
+    setPassword("");
+  }, [setNumber, setPassword]);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const success = await handleLogin(e);
+
+      if (!success) {
+        toast.error("Número ou senha inválidos");
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Erro no login");
+    }
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      {/* Logo e título — reduzindo espaço entre eles */}
+      <div className="flex flex-col items-center gap-0 mb-4">
         <img src="/favicon.ico" alt="Logo" className="h-45 w-45" />
-        <h2 className="text-xl font-extrabold text-gray-800">
+        <h2 className="text-xl font-extrabold text-gray-800 mt-1">
           ACESSE A SUA CONTA
         </h2>
       </div>
@@ -52,6 +63,7 @@ const LoginForm = ({
             value={number}
             onChange={(e) => setNumber(e.target.value)}
             required
+            autoComplete="off"
             className="w-full pl-10 pr-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-600 focus:border-green-600"
           />
         </div>
@@ -69,14 +81,14 @@ const LoginForm = ({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            autoComplete="new-password"
             className="w-full pl-10 pr-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-600 focus:border-green-600"
           />
         </div>
       </div>
 
-      {/* 🚨 CHECKBOX "Mostrar Senha" (esquerda) e "Esqueceu a senha?" (direita) */}
+      {/* Mostrar Senha e Esqueceu senha */}
       <div className="flex justify-between items-center text-xs text-gray-600">
-        {/* Mostrar Senha Checkbox */}
         <div className="flex items-center">
           <input
             id="showPassword"
@@ -90,7 +102,6 @@ const LoginForm = ({
           </label>
         </div>
 
-        {/* Esqueceu a senha? */}
         <button
           type="button"
           onClick={() => setCurrentView(views.FORGOT_PASSWORD)}
@@ -100,23 +111,23 @@ const LoginForm = ({
         </button>
       </div>
 
-      
-
-      {/* Entrar via OTP - BOTÃO COLORIDO */}
+      {/* Entrar via OTP */}
       <button
         type="button"
         onClick={() => setCurrentView(views.OTP_LOGIN)}
         className="w-full cursor-pointer text-white border border-transparent font-bold py-2 rounded-lg hover:opacity-90 transition"
-        style={{ background: colors.accentOrange }} // Usando a cor de destaque
+        style={{ background: colors.accentOrange }}
       >
         Entrar via OTP
       </button>
-{/* OU estilizado */}
+
+      {/* OU estilizado */}
       <div className="flex items-center my-2">
         <div className="flex-1 h-px bg-gray-300"></div>
         <span className="px-2 text-gray-500 text-sm">OU</span>
         <div className="flex-1 h-px bg-gray-300"></div>
       </div>
+
       {/* Botão login */}
       <button
         type="submit"
@@ -127,8 +138,16 @@ const LoginForm = ({
         {loading ? "Aguarde..." : "Entrar"}
       </button>
 
-      {/* Criar conta */}
-      <div className="text-xs text-gray-600 text-center mt-4">
+      {/* Criar conta e voltar */}
+      <div className="text-xs text-gray-600 flex flex-col gap-2 justify-center text-center mt-4">
+        <Link href="/" passHref>
+          <button
+            type="button"
+            className="text-blue-500 hover:underline flex items-center gap-1 justify-center"
+          >
+            <ArrowLeft size={16} color={colors.primaryGreen} /> Voltar à página inicial
+          </button>
+        </Link>
         <p>
           Não possui conta?{" "}
           <button
