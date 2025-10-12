@@ -14,6 +14,8 @@ import {
   Hash,
   Coins,
 } from "lucide-react";
+import { provincesData } from "@/data/provincesData";
+import MapPicker from "@/components/MapPicker";
 
 const colors = {
   primaryGreen: "#4CAF50",
@@ -36,8 +38,7 @@ const SmartForm: React.FC = () => {
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [imageName, setImageName] = useState("Nenhuma imagem selecionada");
-
-  // ref para o container interno do card (rolável)
+  const [showMap, setShowMap] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -81,79 +82,16 @@ const SmartForm: React.FC = () => {
 
   const progress = (phase / 4) * 100;
 
-  // --- Mobile keyboard handling: scroll input focado para centro do card ---
-  useEffect(() => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const onFocusIn = (ev: FocusEvent) => {
-      const target = ev.target as HTMLElement | null;
-      if (!target) return;
-      const tag = target.tagName;
-      if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") {
-        // pequeno delay para esperar o teclado abrir em mobile
-        setTimeout(() => {
-          // scroll o elemento para o centro do card rolável
-          try {
-            target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-          } catch (e) {
-            // fallback simples
-            const rect = target.getBoundingClientRect();
-            card.scrollTop += rect.top - card.getBoundingClientRect().top - 20;
-          }
-        }, 260);
-      }
-    };
-
-    card.addEventListener("focusin", onFocusIn);
-
-    // visualViewport: quando disponível (melhora comportamento em mobile)
-    const vv = (window as any).visualViewport;
-    const onViewportResize = () => {
-      // se houver elemento activo dentro do card, recentre-o
-      const active = document.activeElement as HTMLElement | null;
-      if (active && card.contains(active)) {
-        setTimeout(() => {
-          try {
-            active.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-          } catch (e) {}
-        }, 120);
-      }
-    };
-
-    if (vv && typeof vv.addEventListener === "function") {
-      vv.addEventListener("resize", onViewportResize);
-      vv.addEventListener("scroll", onViewportResize);
-    } else {
-      // fallback: também ouvir window resize
-      window.addEventListener("resize", onViewportResize);
-    }
-
-    return () => {
-      card.removeEventListener("focusin", onFocusIn);
-      if (vv && typeof vv.removeEventListener === "function") {
-        vv.removeEventListener("resize", onViewportResize);
-        vv.removeEventListener("scroll", onViewportResize);
-      } else {
-        window.removeEventListener("resize", onViewportResize);
-      }
-    };
-  }, []);
-
   return (
-    // REMOVED min-h-screen to avoid forcing full viewport height inside modal
     <div className="w-full flex items-center justify-center py-4 px-2 relative z-10">
-     
-      {/* Card: limitar altura e ativar rolagem interna */}
       <div
         ref={cardRef}
         className="w-full max-w-md bg-white shadow-lg rounded-2xl p-6 relative"
-        
         style={{
           borderTop: `6px solid ${colors.primaryGreen}`,
-          maxHeight: "calc(100vh - 120px)", // permite espaço para o teclado / header
+          maxHeight: "calc(100vh - 120px)",
           overflowY: "auto",
-          WebkitOverflowScrolling: "touch", // iOS smoothing
+          WebkitOverflowScrolling: "touch",
         }}
       >
         <div className="flex flex-col items-center -mb-6 -mt-3">
@@ -176,10 +114,8 @@ const SmartForm: React.FC = () => {
           {phase === 1 && (
             <motion.div key="phase1" {...containerVariants} transition={{ duration: 0.4 }}>
               <h2 className="text-xl font-bold text-gray-800 mb-8 text-center">Dados Pessoais</h2>
-
-              {/* Campo nome */}
-              <div className="flex items-center border rounded-lg mb-3 p-2 bg-gray-50 focus-within:ring-2 focus-within:ring-green-600 group">
-                <User className="text-gray-400 mr-2 transition-colors duration-200 group-focus-within:text-green-600" />
+              <div className="flex items-center border rounded-lg mb-3 p-2 bg-gray-50">
+                <User className="text-gray-400 mr-2" />
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -188,10 +124,8 @@ const SmartForm: React.FC = () => {
                   className="flex-1 bg-transparent outline-none py-2"
                 />
               </div>
-
-              {/* Campo telefone */}
-              <div className="flex items-center border rounded-lg mb-6 p-2 bg-gray-50 focus-within:ring-2 focus-within:ring-green-600 group">
-                <Phone className="text-gray-400 mr-2 transition-colors duration-200 group-focus-within:text-green-600" />
+              <div className="flex items-center border rounded-lg mb-6 p-2 bg-gray-50">
+                <Phone className="text-gray-400 mr-2" />
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -200,7 +134,6 @@ const SmartForm: React.FC = () => {
                   className="flex-1 bg-transparent outline-none py-2"
                 />
               </div>
-
               <div className="flex justify-center">
                 <button
                   onClick={handleContinue}
@@ -217,35 +150,87 @@ const SmartForm: React.FC = () => {
             <motion.div key="phase2" {...containerVariants} transition={{ duration: 0.4 }}>
               <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">Localização</h2>
 
-              <div className="flex items-center border rounded-lg mb-3 p-2 bg-gray-50 focus-within:ring-2 focus-within:ring-green-600 group">
-                <MapPin className="text-gray-400 mr-2 transition-colors duration-200 group-focus-within:text-green-600" />
-                <input
-                  value={province}
-                  onChange={(e) => setProvince(e.target.value)}
-                  placeholder="Província"
-                  className="flex-1 bg-transparent outline-none py-2"
+              {showMap ? (
+                <MapPicker
+                  onSelect={(coords, name) => {
+                    setLocality(name || `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`);
+                    setShowMap(false);
+                  }}
+                  onCancel={() => setShowMap(false)}
                 />
-              </div>
+              ) : (
+                <>
+                  <div className="flex items-center border rounded-lg mb-3 p-2 bg-gray-50">
+                    <MapPin className="text-gray-400 mr-2" />
+                    <select
+                      value={province}
+                      onChange={(e) => {
+                        setProvince(e.target.value);
+                        setDistrict("");
+                        setLocality("");
+                      }}
+                      className="flex-1 bg-transparent outline-none py-2"
+                    >
+                      <option value="">Selecione a Província</option>
+                      {provincesData.map((p) => (
+                        <option key={p.name} value={p.name}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div className="flex items-center border rounded-lg mb-3 p-2 bg-gray-50 focus-within:ring-2 focus-within:ring-green-600 group">
-                <MapPin className="text-gray-400 mr-2 transition-colors duration-200 group-focus-within:text-green-600" />
-                <input
-                  value={district}
-                  onChange={(e) => setDistrict(e.target.value)}
-                  placeholder="Distrito"
-                  className="flex-1 bg-transparent outline-none py-2"
-                />
-              </div>
+                  <div className="flex items-center border rounded-lg mb-3 p-2 bg-gray-50">
+                    <MapPin className="text-gray-400 mr-2" />
+                    <select
+                      value={district}
+                      onChange={(e) => {
+                        setDistrict(e.target.value);
+                        setLocality("");
+                      }}
+                      disabled={!province}
+                      className="flex-1 bg-transparent outline-none py-2"
+                    >
+                      <option value="">Selecione o Distrito</option>
+                      {provincesData
+                        .find((p) => p.name === province)
+                        ?.districts.map((d) => (
+                          <option key={d.name} value={d.name}>
+                            {d.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
 
-              <div className="flex items-center border rounded-lg mb-6 p-2 bg-gray-50 focus-within:ring-2 focus-within:ring-green-600 group">
-                <MapPin className="text-gray-400 mr-2 transition-colors duration-200 group-focus-within:text-green-600" />
-                <input
-                  value={locality}
-                  onChange={(e) => setLocality(e.target.value)}
-                  placeholder="Localidade"
-                  className="flex-1 bg-transparent outline-none py-2"
-                />
-              </div>
+                  <div className="flex items-center border rounded-lg mb-3 p-2 bg-gray-50">
+                    <MapPin className="text-gray-400 mr-2" />
+                    <select
+                      value={locality}
+                      onChange={(e) => setLocality(e.target.value)}
+                      disabled={!district}
+                      className="flex-1 bg-transparent outline-none py-2"
+                    >
+                      <option value="">Selecione a Localidade</option>
+                      {provincesData
+                        .find((p) => p.name === province)
+                        ?.districts.find((d) => d.name === district)
+                        ?.localities.map((l) => (
+                          <option key={l.name} value={l.name}>
+                            {l.name}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+
+                  <button
+                    onClick={() => setShowMap(true)}
+                    className="flex items-center justify-center w-full py-2 mb-4 rounded-lg text-white font-semibold"
+                    style={{ background: colors.accentBlue }}
+                  >
+                    📍 Escolher Localidade no Mapa
+                  </button>
+                </>
+              )}
 
               <div className="flex justify-between">
                 <button
@@ -267,6 +252,7 @@ const SmartForm: React.FC = () => {
             </motion.div>
           )}
 
+          {/* === ETAPA 3: Produto === */}
           {phase === 3 && (
             <motion.div key="phase3" {...containerVariants} transition={{ duration: 0.4 }}>
               <h2 className="text-xl font-bold text-gray-800 mb-1 text-center">
@@ -274,8 +260,9 @@ const SmartForm: React.FC = () => {
               </h2>
               <p className="text-sm text-gray-600 mb-5 text-center">Preencha informações do produto</p>
 
+              {/* Categoria */}
               <div className="flex items-center border rounded-lg mb-3 p-2 bg-gray-50 focus-within:ring-2 focus-within:ring-green-600 group">
-                <Layers className="text-gray-400 mr-2 transition-colors duration-200 group-focus-within:text-green-600" />
+                <Layers className="text-gray-400 mr-2 group-focus-within:text-green-600" />
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
@@ -289,8 +276,9 @@ const SmartForm: React.FC = () => {
                 </select>
               </div>
 
+              {/* Quantidade */}
               <div className="flex items-center border rounded-lg mb-6 p-2 bg-gray-50 focus-within:ring-2 focus-within:ring-green-600 group">
-                <Hash className="text-gray-400 mr-2 transition-colors duration-200 group-focus-within:text-green-600" />
+                <Hash className="text-gray-400 mr-2 group-focus-within:text-green-600" />
                 <input
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
@@ -300,8 +288,9 @@ const SmartForm: React.FC = () => {
                 />
               </div>
 
+              {/* Preço */}
               <div className="flex items-center border rounded-lg mb-6 p-2 bg-gray-50 focus-within:ring-2 focus-within:ring-green-600 group">
-                <Coins className="text-gray-400 mr-2 transition-colors duration-200 group-focus-within:text-green-600" />
+                <Coins className="text-gray-400 mr-2 group-focus-within:text-green-600" />
                 <input
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
@@ -331,21 +320,39 @@ const SmartForm: React.FC = () => {
             </motion.div>
           )}
 
+          {/* === ETAPA 4: Imagem === */}
           {phase === 4 && (
-            <motion.form key="phase4" onSubmit={handleSubmit} {...containerVariants} transition={{ duration: 0.4 }}>
+            <motion.form
+              key="phase4"
+              onSubmit={handleSubmit}
+              {...containerVariants}
+              transition={{ duration: 0.4 }}
+            >
               <h2 className="text-xl font-bold text-gray-800 mb-1 text-center">
                 {name} — {phone}
               </h2>
-              <h3 className="text-bold mb-5 text-gray-600 text-center">Adicione uma imagem (opcional)</h3>
+              <h3 className="text-bold mb-5 text-gray-600 text-center">
+                Adicione uma imagem (opcional)
+              </h3>
 
+              {/* Upload */}
               <div className="flex flex-col items-center mb-5 group">
                 <label
                   htmlFor="imageUpload"
                   className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-4 cursor-pointer hover:bg-gray-50 transition"
                 >
-                  <ImageIcon size={40} className="text-gray-400 mb-2 transition-colors duration-200 group-focus-within:text-green-600" />
+                  <ImageIcon
+                    size={40}
+                    className="text-gray-400 mb-2 group-focus-within:text-green-600"
+                  />
                   <span className="text-sm text-gray-600">Carregar imagem</span>
-                  <input id="imageUpload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
                 </label>
                 <span className="text-xs mt-2 text-gray-500 italic">{imageName}</span>
               </div>

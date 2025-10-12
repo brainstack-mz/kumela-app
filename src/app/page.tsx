@@ -28,7 +28,6 @@ export default function HomePage() {
           <Video />
         </section>
 
-
         <section id="contact" className="py-0 md:py-0">
           <ContactsPage />
         </section>
