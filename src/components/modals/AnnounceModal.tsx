@@ -22,34 +22,38 @@ const AnnounceModal: React.FC<AnnounceModalProps> = ({ isOpen, onClose }) => {
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-[99999] flex items-start md:items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[950] flex items-center justify-center bg-black/60 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* Scroll wrapper: ocupa toda a viewport, permite rolagem quando o teclado abre */}
+          {/* Conteúdo centralizado */}
           <motion.div
             variants={modalVariants}
             initial="hidden"
             animate="visible"
             exit="exit"
             transition={{ duration: 0.28, ease: "easeOut" }}
-            className="relative w-full max-w-3xl px-3 md:px-0 flex justify-center items-start mt-6 md:mt-10"
+            className="relative w-full max-w-md mx-4"
             style={{ pointerEvents: "auto" }}
           >
-            {/* Botão Fechar sempre acima (z-index alto) e com fundo sem bloquear leitura */}
-            <button
-              onClick={onClose}
-              className="absolute top-2 right-3 z-[100000] bg-white/90 backdrop-blur-md rounded-full p-1.5 shadow-md hover:bg-red-500 hover:text-white transition-colors duration-200"
-              aria-label="Fechar"
-              style={{ WebkitTapHighlightColor: "transparent" }}
-            >
-              <X size={22} />
-            </button>
+            {/* Card principal que contém o botão */}
+            <div className="relative rounded-2xl overflow-hidden">
+              {/* O botão “X” agora é relativo ao card do SmartForm */}
+              <button
+                onClick={onClose}
+                className="absolute top-2 right-2 z-[55] bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full p-1.5
+                           hover:bg-red-500 text-white transition-colors duration-200"
+                aria-label="Fechar"
+                style={{ WebkitTapHighlightColor: "transparent" }}
+              >
+                <X size={22} />
+              </button>
 
-            {/* O SmartForm renderiza o card e cuida da sua rolagem interna */}
-            <div className="w-full flex justify-center">
-              <SmartForm />
+              {/* O SmartForm é o conteúdo do card */}
+              <div className="relative z-[50]">
+                <SmartForm onClose={onClose}/>
+              </div>
             </div>
           </motion.div>
         </motion.div>
