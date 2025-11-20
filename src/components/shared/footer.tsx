@@ -31,6 +31,7 @@ export default function Footer() {
               />
             </linearGradient>
           </defs>
+          {/* Formas geométricas animadas... */}
           <circle
             cx="20%"
             cy="10%"
@@ -76,14 +77,14 @@ export default function Footer() {
                 className="h-16 w-16 rounded-full"
               />
               <div className="flex flex-col justify-center">
-                <h2 className="text-xl font-bold text-gray-800">MOZAGRO</h2>
+                <h2 className="text-xl font-bold text-gray-800">KUMELA</h2>
                 <p className="text-[0.7rem] text-gray-600 max-w-[183px] whitespace-nowrap overflow-hidden text-ellipsis">
                   Sua colheita, agora conectada
                 </p>
               </div>
             </Link>
-            <p className="text-gray-600 font-light text-sm sm:text-base text-justify">
-              Conectando agricultores e consumidores em Moçambique. A MOZAGRO é
+            <p className="text-gray-600 font-light text-sm sm:text-base text-justify mb-4">
+              Conectando agricultores e consumidores em Moçambique. A **KUMELA** é
               sua plataforma para uma gestão de produtos agrícolas transparente
               e eficiente, construindo um mercado melhor, juntos.
             </p>
@@ -102,16 +103,8 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  href="/#produts"
-                  className="hover:text-green-800  transition-colors duration-300"
-                >
-                  Produtos
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/#faq"
-                  className="hover:text-green-800  transition-colors duration-300"
+                  className="hover:text-green-800 transition-colors duration-300"
                 >
                   FAQ
                 </Link>
@@ -119,23 +112,43 @@ export default function Footer() {
               <li>
                 <Link
                   href="/#Hero"
-                  className="hover:text-green-800  transition-colors duration-300"
+                  className="hover:text-green-800 transition-colors duration-300"
                 >
-                  Sobre a MOZAGRO
+                  Sobre a KUMELA
                 </Link>
               </li>
               <li>
                 <Link
                   href="/#contact"
-                  className="hover:text-green-800  transition-colors duration-300"
+                  className="hover:text-green-800 transition-colors duration-300"
                 >
                   Fale Conosco
+                </Link>
+              </li>
+              
+              {/* === ALTERAÇÃO APLICADA: Termos de Uso === */}
+              <li>
+                <Link
+                  href="/termos-de-uso"
+                  className="text-green-700 underline hover:text-green-900 transition-colors duration-300 font-semibold"
+                >
+                  Termos de Uso
+                </Link>
+              </li>
+              
+              {/* === ALTERAÇÃO APLICADA: Políticas de Privacidade === */}
+              <li>
+                <Link
+                  href="/politicas-de-privacidade"
+                  className="text-green-700 underline hover:text-green-900 transition-colors duration-300 font-semibold"
+                >
+                  Políticas de Privacidade
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contatos */}
+          {/* Contatos (Mantido inalterado) */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-800">
               Contatos
@@ -176,29 +189,13 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-300 mt-8 pt-8 flex flex-col md:flex-row justify-center md:justify-between items-center text-center text-gray-600 text-xs">
+        {/* Direitos Autorais (Centralizado) */}
+        <div className="border-t border-gray-300 mt-8 pt-8 flex justify-center text-center text-gray-600 text-xs">
           <p>
-            © 2025 MOZAGRO. Desenvolvido por{" "}
+            © 2025 **KUMELA**. Desenvolvido por{" "}
             <strong className="text-green-700">BrainStack</strong>. Todos os
             direitos reservados.
           </p>
-          <div className="flex justify-center md:justify-end gap-4 mt-12 md:mt-0">
-            <Link
-              href="/termos-de-uso"
-              className="hover:text-green-800 underline font-semibold transition-colors duration-300"
-            >
-              <strong className="text-green-700"> Termos de Uso</strong>
-            </Link>
-            <Link
-              href="/politicas-de-privacidade"
-              className="hover:text-green-800 underline font-semibold transition-colors duration-300"
-            >
-              <strong className="text-green-700">
-                {" "}
-                Políticas de Privacidade
-              </strong>
-            </Link>
-          </div>
         </div>
       </div>
     </footer>
