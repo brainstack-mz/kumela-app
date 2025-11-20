@@ -44,8 +44,15 @@ export default function FaqPage() {
   };
 
   return (
-    <div className="relative overflow-hidden">
+    // O container principal precisa do 'relative' para o círculo absoluto
+    <div className="relative overflow-hidden min-h-screen"> 
+      
+     
+      {/* z-0 garante que ele fique atrás (z-index: 0) */}
+      <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-[#f99d3e] rounded-full transform translate-x-1/2 translate-y-1/2 opacity-60 z-0"></div>
+
       {/* Container para o conteúdo principal */}
+      {/* z-10 garante que o conteúdo do FAQ fique na frente (z-index: 10) */}
       <div className="relative z-10 p-4 flex flex-col lg:flex-row items-center lg:items-start container mx-auto md:px-8">
         {/* Coluna da Esquerda: Título e Descrição */}
         <div className="flex-1 lg:max-w-[40%] text-center lg:text-left mb-8 lg:mb-0 lg:sticky lg:top-16">
@@ -64,6 +71,7 @@ export default function FaqPage() {
             return (
               <div
                 key={index}
+                // Adicionei bg-white aqui para garantir que os cards sejam opacos
                 className={`rounded-2xl border bg-white transition-all duration-300 overflow-hidden 
                 ${isOpen ? 'border-[#4CAF50] shadow-xl' : 'border-gray-200 shadow-md'}`}
               >

@@ -1,0 +1,356 @@
+'use client';
+
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { 
+  ShoppingCart, 
+  Plus, 
+  Minus, 
+  Trash2, 
+  CreditCard, 
+  Truck, 
+  CheckCircle,
+  MapPin,
+  Clock,
+  User,
+  ArrowLeft,
+  Heart,
+  Share2
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+
+const fadeIn = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+};
+
+// Mock data for cart items
+const mockCartItems = [
+  {
+    id: 1,
+    name: 'Tomates Frescos',
+    price: 150,
+    quantity: 2,
+    image: '/assets/imgs/tomate.jpeg',
+    seller: 'João Silva',
+    location: 'Maputo, Moçambique',
+    description: 'Tomates orgânicos colhidos hoje mesmo'
+  },
+  {
+    id: 2,
+    name: 'Arroz Premium',
+    price: 200,
+    quantity: 1,
+    image: '/assets/imgs/arroz.jpeg',
+    seller: 'Maria Santos',
+    location: 'Nampula, Moçambique',
+    description: 'Arroz de alta qualidade, grão longo'
+  },
+  {
+    id: 3,
+    name: 'Bananas',
+    price: 80,
+    quantity: 3,
+    image: '/assets/imgs/banana.jpeg',
+    seller: 'Carlos Mendes',
+    location: 'Beira, Moçambique',
+    description: 'Bananas maduras e doces'
+  }
+];
+
+export default function CartPage() {
+  const [cartItems, setCartItems] = useState(mockCartItems);
+  
+  // Calculate totals
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const shipping = subtotal > 500 ? 0 : 50; // Free shipping over 500
+  const total = subtotal + shipping;
+
+  const updateQuantity = (id: number, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeItem(id);
+      return;
+    }
+    setCartItems(items => 
+      items.map(item => 
+        item.id === id ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  const removeItem = (id: number) => {
+    setCartItems(items => items.filter(item => item.id !== id));
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
+  // Empty cart state
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <motion.div
+              variants={fadeIn}
+              initial="initial"
+              animate="animate"
+              className="bg-white rounded-2xl shadow-lg p-12"
+            >
+              {/* Empty Cart Icon */}
+              <div className="mb-8">
+                <div className="mx-auto w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                  <ShoppingCart className="h-16 w-16 text-gray-400" />
+                </div>
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">
+                  Seu carrinho está vazio
+                </h1>
+                <p className="text-gray-600 text-lg mb-8">
+                  Que tal adicionar alguns produtos incríveis?
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-4">
+                <Link
+                  href="/"
+                  className="inline-flex items-center gap-2 bg-green-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  Continuar Comprando
+                </Link>
+                
+                <div className="text-sm text-gray-500">
+                  <p>Ou explore nossas categorias:</p>
+                  <div className="flex justify-center gap-4 mt-4">
+                    <Link href="/produtos" className="text-green-600 hover:underline">
+                      Produtos
+                    </Link>
+                    <Link href="/categorias" className="text-green-600 hover:underline">
+                      Categorias
+                    </Link>
+                    <Link href="/ofertas" className="text-green-600 hover:underline">
+                      Ofertas
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <motion.div
+            variants={fadeIn}
+            initial="initial"
+            animate="animate"
+            className="mb-8"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <ShoppingCart className="h-8 w-8 text-green-600" />
+                <h1 className="text-3xl font-bold text-gray-800">Carrinho de Compras</h1>
+                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'}
+                </span>
+              </div>
+              
+              <button
+                onClick={clearCart}
+                className="text-red-500 hover:text-red-700 text-sm font-medium flex items-center gap-1"
+              >
+                <Trash2 className="h-4 w-4" />
+                Limpar Carrinho
+              </button>
+            </div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Cart Items */}
+            <div className="lg:col-span-2 space-y-6">
+              {cartItems.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-xl shadow-md p-6 border border-gray-100"
+                >
+                  <div className="flex gap-6">
+                    {/* Product Image */}
+                    <div className="flex-shrink-0">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        width={120}
+                        height={120}
+                        className="rounded-lg object-cover"
+                      />
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-xl font-semibold text-gray-800">
+                          {item.name}
+                        </h3>
+                        <div className="flex gap-2">
+                          <button className="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                            <Heart className="h-5 w-5" />
+                          </button>
+                          <button className="p-2 text-gray-400 hover:text-blue-500 transition-colors">
+                            <Share2 className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <p className="text-gray-600 mb-3">
+                        {item.description}
+                      </p>
+                      
+                      {/* Seller Info */}
+                      <div className="flex items-center gap-6 text-sm text-gray-500 mb-4">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4" />
+                          <span>{item.seller}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4" />
+                          <span>{item.location}</span>
+                        </div>
+                      </div>
+
+                      {/* Price and Quantity */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-6">
+                          <span className="text-2xl font-bold text-green-600">
+                            {item.price} MT
+                          </span>
+                          
+                          {/* Quantity Controls */}
+                          <div className="flex items-center gap-3">
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="px-4 py-2 bg-gray-100 rounded-lg font-medium min-w-[3rem] text-center">
+                              {item.quantity}
+                            </span>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Remove Button */}
+                        <button 
+                          onClick={() => removeItem(item.id)}
+                          className="p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Order Summary */}
+            <div className="lg:col-span-1">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-white rounded-xl shadow-md p-6 border border-gray-100 sticky top-24"
+              >
+                <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  Resumo do Pedido
+                </h2>
+
+                {/* Order Details */}
+                <div className="space-y-4 mb-6">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Subtotal</span>
+                    <span>{subtotal} MT</span>
+                  </div>
+                  
+                  <div className="flex justify-between text-gray-600">
+                    <span>Entrega</span>
+                    <span className={shipping === 0 ? 'text-green-600 font-medium' : ''}>
+                      {shipping === 0 ? 'Grátis' : `${shipping} MT`}
+                    </span>
+                  </div>
+
+                  {shipping > 0 && (
+                    <div className="text-sm text-gray-500 bg-blue-50 p-3 rounded-lg">
+                      <p className="flex items-center gap-2">
+                        <Truck className="h-4 w-4 text-blue-600" />
+                        Adicione mais {500 - subtotal} MT para frete grátis!
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between text-xl font-semibold text-gray-800">
+                      <span>Total</span>
+                      <span>{total} MT</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Checkout Button */}
+                <button className="w-full bg-green-600 text-white py-4 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 mb-4">
+                  <CreditCard className="h-5 w-5" />
+                  Finalizar Compra
+                </button>
+
+                {/* Security Info */}
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <span>Compra 100% segura</span>
+                  </div>
+                </div>
+
+                {/* Delivery Info */}
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                    <Truck className="h-5 w-5 text-green-600" />
+                    Entrega
+                  </h3>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4" />
+                      <span>Prazo: 2-5 dias úteis</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      <span>Entrega em todo Moçambique</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

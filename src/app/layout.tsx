@@ -24,14 +24,25 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const isLoginPage = pathname === "/public/login";
   const isDashboardPage = pathname.endsWith("/dashboard");
   const isAdminPath = pathname.startsWith("/admin");
+  
+  // === NOVO: Identifica páginas legais que devem ter APENAS o Header ===
+  const isLegalPage = pathname === "/termos-de-uso" || pathname === "/politicas-de-privacidade";
+  
+  // Páginas públicas agora incluem as páginas legais, mas excluem o login
   const isPublicPage = !isAdminPath && !isDashboardPage && !isLoginPage;
-
+  
   const showAdminLayout = isAdminPath || isDashboardPage;
   const showSidebar = user?.role === "admin" && (isAdminPath || isDashboardPage);
 
+  // O Header Público é exibido em todas as páginas públicas (incluindo legais)
+  const showHeader = isPublicPage;
+  
+  // O Footer só é exibido se for uma página pública E NÃO for uma página legal
+  const showFooter = isPublicPage && !isLegalPage;
+
   return (
     <>
-      {isPublicPage && <Header />}
+      {showHeader && <Header />}
 
       {showSidebar && (
         <Sidebar
@@ -54,14 +65,15 @@ function AppContent({ children }: { children: React.ReactNode }) {
       >
         <main
           className={`${
-            showAdminLayout ? "p-4 mt-4" : isPublicPage ? "pt-15" : " "
-          } flex-1`}
+            showAdminLayout ? "p-4 mt-4" : showHeader ? "pt-20" : " "
+          } flex-1`} // Corrigido 'pt-15' para 'pt-20' para garantir espaço do Header
         >
           {children}
         </main>
       </div>
 
-      {isPublicPage && <Footer />}
+      {/* === LÓGICA ATUALIZADA: Footer só aparece se NÃO for uma página legal === */}
+      {showFooter && <Footer />}
 
       {/* Toaster para notificações */}
       <Toaster position="top-right" reverseOrder={false} />
@@ -77,7 +89,7 @@ export default function RootLayout({
   return (
     <html lang="pt-br" className={inter.className}>
       <head>
-        <title>mozagro.co.mz</title>
+        <title>kumela.co.mz</title>
       </head>
       <body className="min-h-screen flex flex-col bg-[#f8f9fa]">
         <AuthProvider>

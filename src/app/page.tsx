@@ -12,7 +12,7 @@ export default function HomePage() {
   return (
      <div className="relative w-full overflow-x-hidden bg-[#e9f1f2] ">
  
-      <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-[#f99d3e] rounded-full transform translate-x-1/2 translate-y-1/2 opacity-60"></div>
+    
 
       {/* Conteúdo principal da página */}
       <div className="relative"> 
@@ -32,7 +32,7 @@ export default function HomePage() {
           <ContactsPage />
         </section>
 
-        <section id="faq" className="py-10 md:py-18">
+       <section id="faq" className="pt-10 md:pt-18 pb-0">
           <Faq />
         </section>
       </div>
