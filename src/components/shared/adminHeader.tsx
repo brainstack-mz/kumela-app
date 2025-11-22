@@ -58,7 +58,7 @@ export default function AdminHeader({ onMenuClick, isSidebarOpen }: AdminHeaderP
     <>
       <header
         className={`sticky top-0 z-40 w-full right-0
-        h-18 bg-white shadow-md flex items-center justify-between px-6
+        h-16 bg-white shadow-md flex items-center justify-between px-6
         transition-all duration-300 ease-in-out ${
           isSidebarOpen && showMenuButton
             ? "md:left-64 w-[calc(100%-16rem)]"

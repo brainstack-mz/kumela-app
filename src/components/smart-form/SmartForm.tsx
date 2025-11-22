@@ -111,12 +111,33 @@ const SmartForm: React.FC<SmartFormProps> = ({ onClose }) => {
     }
   }, []);
 
+  // Inicializa com Nampula
+  useEffect(() => {
+    setProvince("Nampula");
+    const nampulaData = provincesData.find((p) => p.name === "Nampula");
+    if (nampulaData) {
+      setDistricts(nampulaData.districts);
+    }
+    // Tenta pegar localização atual ao iniciar
+    if (navigator.geolocation && !localityCoords) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocalityCoords({ lat: latitude, lng: longitude });
+          setLocality(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+        },
+        () => {
+          // Silenciosamente falha se não tiver permissão
+        }
+      );
+    }
+  }, []);
+
   // atualiza lista de distritos quando mudar província
   useEffect(() => {
     if (province) {
       const selected = provincesData.find((p) => p.name === province);
       setDistricts(selected ? selected.districts : []);
-      // mantem o distrito guardado só se pertence à nova província
       const storedDistrict = localStorage.getItem("district");
       if (storedDistrict && selected && selected.districts.includes(storedDistrict)) {
         setDistrict(storedDistrict);
@@ -297,13 +318,12 @@ const SmartForm: React.FC<SmartFormProps> = ({ onClose }) => {
   const progress = (phase / 5) * 100;
 
   return (
-    <div className="w-full flex items-center justify-center py-4 px-2 relative z-10">
+    <div className="w-full flex items-center justify-center py-4 px-4 sm:px-6 relative z-10">
       <div
         ref={cardRef}
-        className="w-full max-w-md bg-white shadow-lg rounded-2xl p-6 relative"
+        className="w-full bg-white rounded-2xl p-4 sm:p-6 relative"
         style={{
           borderTop: `6px solid ${colors.primaryGreen}`,
-          maxHeight: "calc(100vh - 120px)",
           overflowY: "auto",
           WebkitOverflowScrolling: "touch",
         }}
@@ -351,14 +371,15 @@ const SmartForm: React.FC<SmartFormProps> = ({ onClose }) => {
               <h2 className="text-xl font-bold mb-4 text-gray-800 text-center">Localização</h2>
 
               <div className="space-y-4">
+                {/* Província fixa */}
                 <div className="flex items-center border rounded-lg p-2">
                   <MapPin className="text-gray-500 mr-2" />
-                  <select value={province} onChange={(e) => setProvince(e.target.value)} className="w-full outline-none bg-transparent">
-                    <option value="">Selecione a província</option>
-                    {provincesData.map((p) => (
-                      <option key={p.name} value={p.name}>{p.name}</option>
-                    ))}
-                  </select>
+                  <input
+                    type="text"
+                    value="Nampula"
+                    disabled
+                    className="w-full outline-none bg-gray-100 text-gray-700 cursor-not-allowed"
+                  />
                 </div>
 
                 <div className="flex items-center border rounded-lg p-2">
@@ -371,17 +392,16 @@ const SmartForm: React.FC<SmartFormProps> = ({ onClose }) => {
                   </select>
                 </div>
 
-                {/* Campo localidade + botão abrir mapa */}
+                {/* Campo localidade + botão pegar localização atual */}
                 <div className="flex gap-2 items-center">
                   <div className="flex items-center border rounded-lg p-2 flex-1">
                     <MapPin className="text-gray-500 mr-2" />
                     <input
                       type="text"
-                      placeholder="Localidade (opcional)"
+                      placeholder="Localidade (clique no mapa para pegar localização atual)"
                       value={locality}
                       onChange={(e) => {
                         setLocality(e.target.value);
-                        // remove coords se o usuário editar manualmente
                         if (localityCoords) setLocalityCoords(null);
                       }}
                       className="w-full outline-none"
@@ -389,11 +409,29 @@ const SmartForm: React.FC<SmartFormProps> = ({ onClose }) => {
                   </div>
 
                   <button
-                    onClick={() => setMapOpen(true)}
-                    className="py-2 px-3 rounded-lg border hover:bg-gray-50 flex items-center gap-2"
-                    title="Escolher no mapa"
+                    onClick={() => {
+                      // Primeiro tenta pegar a localização atual
+                      if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                          (position) => {
+                            const { latitude, longitude } = position.coords;
+                            setLocalityCoords({ lat: latitude, lng: longitude });
+                            setLocality(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+                            setMapOpen(true);
+                          },
+                          () => {
+                            // Se falhar, abre o mapa normalmente
+                            setMapOpen(true);
+                          }
+                        );
+                      } else {
+                        setMapOpen(true);
+                      }
+                    }}
+                    className="py-2 px-3 rounded-lg bg-green-500 text-white hover:bg-green-600 flex items-center gap-2 transition-colors"
+                    title="Usar localização atual"
                   >
-                    <MapPin size={18} /> Mapa
+                    <MapPin size={18} /> GPS
                   </button>
                 </div>
 

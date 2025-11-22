@@ -1,36 +1,160 @@
-'use client';
+"use client";
 
-import AdminRouteProtector from "@/components/admin-components/AdminRouteProtector";
-import ViewContainer from "@/components/user-components/ViewContainer";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import Link from "next/link";
+import { useTheme } from "@/context/ThemeContext";
+import { useRouter } from "next/navigation";
+import {
+  Users,
+  ShoppingBag,
+  Truck,
+  DollarSign,
+  AlertCircle,
+  Package,
+  Settings,
+  Edit,
+  Trash2,
+} from "lucide-react";
+import UnifiedDashboardHeader from "@/components/shared/UnifiedDashboardHeader";
+import Sidebar from "@/components/admin-components/Sidebar";
 
-import { Leaf} from "lucide-react";
+const mockStats = {
+  totalUsers: 150,
+  activeSellers: 25,
+  activeShippers: 10,
+  transactions: 1250,
+  disputes: 3,
+  activeProducts: 180,
+};
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  
+  const { theme } = useTheme();
+  const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  if (!user || user.role !== "admin") {
+    router.push("/public/login");
+    return null;
+  }
+
   return (
-    <AdminRouteProtector>
-      <ViewContainer>
-        <div className="p-8">
-          <h1 className="text-3xl font-bold">Painel do Administrador</h1>
-          <p className="mt-2 text-gray-600">
-            Bem-vindo(a), {user?.role}! Este é o painel de gerenciamento global do sistema.
-          </p>
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {/* Card de Anunciar */}
-            <Link href="/seller/products/new-ad" passHref>
-              <div className="flex flex-col items-center justify-center p-6 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-105 cursor-pointer text-center h-40">
-                <Leaf size={40} className="text-[#4CAF50] mb-2"/>
-                <span className="text-base font-semibold text-gray-900">Anunciar</span>
-                <p className="mt-1 text-xs text-gray-500">Adicione um novo produto.</p>
-              </div>
-            </Link>
+    <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"}`}>
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
+      <UnifiedDashboardHeader
+        title="Painel Administrativo"
+        onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        isSidebarOpen={isSidebarOpen}
+        showSidebarToggle={true}
+      />
+      <main className={`min-h-screen transition-all duration-300 ${
+        isSidebarOpen ? "md:ml-64" : "md:ml-20"
+      }`} style={{ paddingTop: '64px' }}>
+        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900 dark:text-white">Painel Administrativo</h2>
+          <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Gerencie o sistema completo</p>
         </div>
 
+        {/* Statistics */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow`}>
+            <Users className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mb-2" />
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Usuários</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{mockStats.totalUsers}</p>
+          </div>
+          <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow`}>
+            <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8 text-green-600 mb-2" />
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Vendedores</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{mockStats.activeSellers}</p>
+          </div>
+          <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow`}>
+            <Truck className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600 mb-2" />
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Transportadores</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{mockStats.activeShippers}</p>
+          </div>
+          <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow`}>
+            <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600 mb-2" />
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Transações</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{mockStats.transactions}</p>
+          </div>
+          <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow`}>
+            <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-red-600 mb-2" />
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Disputas</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{mockStats.disputes}</p>
+          </div>
+          <div className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-shadow`}>
+            <Package className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600 mb-2" />
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Produtos</p>
+            <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{mockStats.activeProducts}</p>
+          </div>
         </div>
-      </ViewContainer>
-    </AdminRouteProtector>
+
+        {/* Management Sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <button
+            onClick={() => router.push("/admin/users")}
+            className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all text-left`}
+          >
+            <Users className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 mb-3" />
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Gestão de Usuários</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Clientes, Vendedores e Transportadores</p>
+          </button>
+
+          <button
+            onClick={() => router.push("/seller/products/my-products")}
+            className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all text-left`}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <Package className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
+              <Edit className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-400" />
+              <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Gestão de Produtos</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Editar ou remover produtos</p>
+          </button>
+
+          <button
+            onClick={() => router.push("/admin/transactions")}
+            className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all text-left`}
+          >
+            <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-600 mb-3" />
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Transações</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Ver todas as transações e pagamentos</p>
+          </button>
+
+          <button
+            onClick={() => router.push("/admin/disputes")}
+            className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all text-left`}
+          >
+            <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-red-600 mb-3" />
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Disputas</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Mediar disputas entre usuários</p>
+          </button>
+
+          <button
+            onClick={() => router.push("/admin/settings")}
+            className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all text-left`}
+          >
+            <Settings className="w-6 h-6 sm:w-8 sm:h-8 text-gray-600 mb-3" />
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Configurações</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Configurar sistema, taxas e transportadoras</p>
+          </button>
+
+          <button
+            onClick={() => router.push("/admin/report")}
+            className={`${theme === "dark" ? "bg-gray-800" : "bg-white"} rounded-xl p-4 sm:p-6 shadow-md hover:shadow-lg transition-all text-left`}
+          >
+            <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600 mb-3" />
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-2">Relatórios</h3>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Relatórios financeiros e estatísticas</p>
+          </button>
+        </div>
+        </div>
+      </main>
+    </div>
   );
 }
