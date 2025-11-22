@@ -4,7 +4,6 @@
 import { useState } from "react";
 import ProductCard from "../products-seller/ProductCard";
 import ProductPreviewModal from "../products-seller/ProductPreviewModal";
-import PaymentModal from "../products-seller/payments/PaymentModal";
 import { useSearch } from "@/context/SearchContext";
 
 // Dados organizados nas categorias corretas
@@ -21,7 +20,8 @@ const productsData = [
     seller: "João da Horta",
     phone: "258841234567",
     category: "Verduras",
-    quantity: 25,  
+    quantity: 25,
+    stock: 25,
     unit: "kg",    
   },
   {
@@ -34,7 +34,8 @@ const productsData = [
     seller: "VerdeTech",
     phone: "258845566778",
     category: "Verduras",
-    quantity: 50,  
+    quantity: 50,
+    stock: 50,
     unit: "molho",
   },
   {
@@ -47,7 +48,8 @@ const productsData = [
     seller: "Horta Zambézia",
     phone: "258841112233",
     category: "Verduras",
-    quantity: 15, 
+    quantity: 15,
+    stock: 15,
     unit: "molho",
   },
 
@@ -62,7 +64,8 @@ const productsData = [
     seller: "Hortaliças de Gaza",
     phone: "258841122334",
     category: "Legumes",
-    quantity: 100,  
+    quantity: 100,
+    stock: 100,
     unit: "kg",
   },
   {
@@ -75,7 +78,8 @@ const productsData = [
     seller: "Mercado Maputo",
     phone: "258847889900",
     category: "Legumes",
-    quantity: 45, 
+    quantity: 45,
+    stock: 45,
     unit: "kg",
   },
   {
@@ -89,7 +93,8 @@ const productsData = [
     seller: "Agro Nampula",
     phone: "258846778899",
     category: "Legumes",
-    quantity: 100,  
+    quantity: 100,
+    stock: 100,
     unit: "kg",
   },
 
@@ -105,7 +110,8 @@ const productsData = [
     seller: "Banana & Cia",
     phone: "258841122334",
     category: "Frutas",
-    quantity: 100,  
+    quantity: 100,
+    stock: 100,
     unit: "kg",
   },
   {
@@ -118,7 +124,8 @@ const productsData = [
     seller: "Frutas Tropicais SA",
     phone: "258847778899",
     category: "Frutas",
-    quantity: 90,  
+    quantity: 90,
+    stock: 90,
     unit: "kg",
   },
   {
@@ -131,7 +138,8 @@ const productsData = [
     seller: "Manga de Ouro",
     phone: "258848877990",
     category: "Frutas",
-    quantity:100,  
+    quantity: 100,
+    stock: 100,
     unit: "kg",
   },
   {
@@ -144,7 +152,8 @@ const productsData = [
     seller: "Manga Fina",
     phone: "258848877990",
     category: "Frutas",
-    quantity: 83,  
+    quantity: 83,
+    stock: 83,
     unit: "kg",
   },
   {
@@ -157,7 +166,8 @@ const productsData = [
     seller: "Melancia Grande",
     phone: "258848877990",
     category: "Frutas",
-    quantity: 47,  
+    quantity: 47,
+    stock: 47,
     unit: "kg",
   },
 
@@ -172,7 +182,8 @@ const productsData = [
     seller: "Fazenda Doce",
     phone: "258849876543",
     category: "Raízes",
-    quantity: 20,  
+    quantity: 20,
+    stock: 20,
     unit: "kg",
   },
   {
@@ -185,7 +196,8 @@ const productsData = [
     seller: "Produtos da Terra",
     phone: "258848877990",
     category: "Raízes",
-    quantity: 34,  
+    quantity: 34,
+    stock: 34,
     unit: "kg",
   },
   {
@@ -198,7 +210,8 @@ const productsData = [
     seller: "Niassa Agro",
     phone: "258842345678",
     category: "Raízes",
-    quantity: 150,  
+    quantity: 150,
+    stock: 150,
     unit: "kg",
   },
   {
@@ -211,7 +224,8 @@ const productsData = [
     seller: "Niassa Agro",
     phone: "258842345678",
     category: "Raízes",
-   quantity: 130,  
+    quantity: 130,
+    stock: 130,
     unit: "kg",
   },
 
@@ -226,7 +240,8 @@ const productsData = [
     seller: "Laticínios de Tete",
     phone: "258846665544",
     category: "Laticínios",
-    quantity: 100,  
+    quantity: 100,
+    stock: 100,
     unit: "lit",
   },
   {
@@ -239,6 +254,9 @@ const productsData = [
     seller: "Fazenda Maputo",
     phone: "258845123456",
     category: "Laticínios",
+    quantity: 50,
+    stock: 50,
+    unit: "kg",
   },
   // --------- Cereais ---------
   {
@@ -252,7 +270,8 @@ const productsData = [
     seller: "Agro Comercial",
     phone: "258847654321",
     category: "Cereais",
-   quantity: 139,  
+    quantity: 139,
+    stock: 139,
     unit: "kg",
   },
   {
@@ -265,7 +284,8 @@ const productsData = [
     seller: "Arroz Sofala",
     phone: "258847123456",
     category: "Cereais",
-        quantity: 230,  
+    quantity: 230,
+    stock: 230,
     unit: "kg",
   },
   {
@@ -278,7 +298,8 @@ const productsData = [
     seller: "Agro Manica",
     phone: "258846112233",
     category: "Cereais",
-        quantity: 200,  
+    quantity: 200,
+    stock: 200,
     unit: "kg",
   },
 ];
@@ -295,9 +316,8 @@ const categories = [
 
 export default function Products() {
   const { searchTerm } = useSearch();
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [selectedCategory, setSelectedCategory] = useState("Todos");
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [visibleProducts, setVisibleProducts] = useState(12);
 
   const filteredProducts = productsData.filter((product) => {
@@ -307,19 +327,17 @@ export default function Products() {
     return matchCategory && matchSearch;
   });
 
-  const handlePreview = (productId) => {
+  const handlePreview = (productId: number) => {
     const product = productsData.find((p) => p.id === productId);
     setSelectedProduct(product || null);
   };
 
-  const handleCloseModal = () => {
-    setSelectedProduct(null);
-    setShowPaymentModal(false);
+  const handleAddToCart = (productId: number) => {
+    alert("Produto adicionado ao carrinho!");
   };
 
-  const handleBuy = (product) => {
-    setSelectedProduct(product);
-    setShowPaymentModal(true);
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
   };
 
   const handleSeeMore = () => {
@@ -357,13 +375,14 @@ export default function Products() {
         <hr className="my-8 border-t border-gray-200" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.slice(0, visibleProducts).map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onPreview={handlePreview}
-            />
-          ))}
+            {filteredProducts.slice(0, visibleProducts).map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onPreview={handlePreview}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
         </div>
 
         {visibleProducts < filteredProducts.length && (
@@ -380,14 +399,6 @@ export default function Products() {
 
       <ProductPreviewModal
         product={selectedProduct}
-        onClose={handleCloseModal}
-        onAddToCart={() => alert("Produto adicionado ao carrinho!")}
-        onBuy={handleBuy}
-      />
-
-      <PaymentModal
-        product={selectedProduct}
-        show={showPaymentModal}
         onClose={handleCloseModal}
       />
     </section>

@@ -27,6 +27,7 @@ import { StepIndicator } from '@/components/shared/StepIndicator';
 // Data
 import { provincesData } from '@/data/provincesData';
 import { loginUser, DASHBOARD_URLS } from '@/lib/users';
+import { useAuth } from '@/context/AuthContext';
 
 // Tipos (mantidos inalterados)
 interface AuthState {
@@ -86,6 +87,7 @@ const sliderData = [
 
 export default function AuthPage() {
   const router = useRouter();
+  const { login: authLogin } = useAuth();
   
   const [authState, setAuthState] = useState<AuthState>({
     phoneNumber: '',
@@ -268,6 +270,8 @@ export default function AuthPage() {
       const user = loginUser(cleanPhone, authState.password);
       
       if (user) {
+        // Salvar no AuthContext
+        authLogin(user);
         showToast(`Bem-vindo, ${user.role}!`, 'success');
         setTimeout(() => {
           const redirectUrl = DASHBOARD_URLS[user.role];

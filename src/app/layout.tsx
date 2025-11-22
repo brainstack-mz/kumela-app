@@ -8,6 +8,7 @@ import Sidebar from "@/components/admin-components/Sidebar";
 import Footer from "@/components/shared/footer";
 import { SearchProvider } from "@/context/SearchContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 import "./globals.css";
 
@@ -31,8 +32,8 @@ function AppContent({ children }: { children: React.ReactNode }) {
   // Páginas públicas agora incluem as páginas legais, mas excluem o login
   const isPublicPage = !isAdminPath && !isDashboardPage && !isLoginPage;
   
-  const showAdminLayout = isAdminPath || isDashboardPage;
-  const showSidebar = user?.role === "admin" && (isAdminPath || isDashboardPage);
+  // Sidebar apenas para admin (mas não renderiza AdminHeader aqui, cada dashboard gerencia seu próprio header)
+  const showSidebar = false; // Desabilitado - cada dashboard gerencia seu próprio sidebar
 
   // O Header Público é exibido em todas as páginas públicas (incluindo legais)
   const showHeader = isPublicPage;
@@ -44,19 +45,6 @@ function AppContent({ children }: { children: React.ReactNode }) {
     <>
       {showHeader && <Header />}
 
-      {showSidebar && (
-        <Sidebar
-          isOpen={isSidebarOpen}
-          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
-      )}
-
-      {showAdminLayout && (
-        <AdminHeader
-          onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          isSidebarOpen={isSidebarOpen}
-        />
-      )}
 
       <div
         className={`flex flex-col flex-1 transition-all duration-300
@@ -65,8 +53,8 @@ function AppContent({ children }: { children: React.ReactNode }) {
       >
         <main
           className={`${
-            showAdminLayout ? "p-4 mt-4" : showHeader ? "pt-20" : " "
-          } flex-1`} // Corrigido 'pt-15' para 'pt-20' para garantir espaço do Header
+            showHeader ? "pt-20" : " "
+          } flex-1`}
         >
           {children}
         </main>
@@ -92,11 +80,13 @@ export default function RootLayout({
         <title>kumela.co.mz</title>
       </head>
       <body className="min-h-screen flex flex-col bg-[#f8f9fa]">
-        <AuthProvider>
-          <SearchProvider>
-            <AppContent>{children}</AppContent>
-          </SearchProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <SearchProvider>
+              <AppContent>{children}</AppContent>
+            </SearchProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

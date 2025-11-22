@@ -3,17 +3,24 @@
  "use client";
 
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { loginUser, USERS, getUserByPhoneNumber } from '@/lib/users';
 
-// Tipos para o usuário e o contexto
-interface User {
-  email: string;
-  role: string;
+// Tipos para o usuário e o contexto - compatível com users.ts
+export interface User {
+  numero: string;
+  password?: string;
+  role: "admin" | "buyer" | "seller" | "shipper";
+  name?: string;
+  province?: string;
+  district?: string;
+  photo?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (userData: User) => void;
   logout: () => void;
+  getUserByPhone: (phone: string) => User | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,13 +53,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('sgrc_user');
   };
 
+  const getUserByPhone = (phone: string): User | null => {
+    return getUserByPhoneNumber(phone);
+  };
+
   if (loading) {
-    // Opcional: Mostre uma tela de carregamento enquanto o estado é restaurado
-    return <div>Carregando...</div>;
+    return <div className="flex items-center justify-center min-h-screen">Carregando...</div>;
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, getUserByPhone }}>
       {children}
     </AuthContext.Provider>
   );

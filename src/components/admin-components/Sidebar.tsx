@@ -54,8 +54,7 @@ if (!user || user.role !== "admin") {
     return pathname.startsWith(href);
   };
 
-  const currentUser = USERS.find(u => u.numero === user?.email);
-  const userNumero = currentUser ? currentUser.numero : 'Usuário';
+  const userNumero = user?.numero || 'Usuário';
 
   if (!user || user.role !== "admin") {
     return null;
@@ -70,16 +69,18 @@ if (!user || user.role !== "admin") {
         ></div>
       )}
 
-      <aside style={{ backgroundColor: '#ffff' }} className={`fixed top-0 left-0 h-screen shadow-2xl z-40 transition-all duration-300
+      <aside className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-800 shadow-2xl z-40 transition-all duration-300
           ${isOpen ? "w-64" : "w-20"}
           ${!isOpen ? "-translate-x-full md:translate-x-0" : "translate-x-0"}
         `}
       >
         <div className="flex flex-col h-full">
-          <div className={`flex items-center h-16 p-4 border-b border-gray-200 ${isOpen ? "" : "justify-center"}`}>
-            <img src="/favicon.ico" alt="Logo" className="w-8 h-8 mr-2 flex-shrink-0 transition-all duration-300" />
-            <span className={`text-xl font-bold text-gray-800 whitespace-nowrap overflow-hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}>
-              MozAgro
+          <div className={`flex items-center h-16 p-4 border-b border-gray-200 dark:border-gray-700 ${isOpen ? "" : "justify-center"}`}>
+            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mr-2 flex-shrink-0">
+              <Leaf className="w-5 h-5 text-white" />
+            </div>
+            <span className={`text-xl font-bold text-gray-800 dark:text-white whitespace-nowrap overflow-hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}>
+              KUMELA
             </span>
           </div>
 
@@ -90,10 +91,10 @@ if (!user || user.role !== "admin") {
                   <Link
                     href={item.href}
                     onClick={isMobile ? onToggle : undefined}
-                    className={`group relative flex items-center p-3 rounded-lg transition-colors duration-200 ${
+                    className={`group relative flex items-center p-3 rounded-lg transition-all duration-200 ${
                       isLinkActive(item.href)
-                        ? "bg-[#6a89cc] text-white shadow-lg"
-                        : "text-gray-700 hover:bg-gray-200"
+                        ? "bg-green-600 text-white shadow-lg"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
                     }`}
                   >
                     <item.icon size={20} className="mr-3 flex-shrink-0" />
@@ -116,20 +117,20 @@ if (!user || user.role !== "admin") {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className={`p-4 mt-auto border-t border-gray-300 transition-all duration-300 ${isOpen ? "w-full" : "w-16 flex justify-center"}`}
+              className={`p-4 mt-auto border-t border-gray-300 dark:border-gray-700 transition-all duration-300 ${isOpen ? "w-full" : "w-16 flex justify-center"}`}
             >
               <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-lg">
+                <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-lg">
                   {userNumero.charAt(0).toUpperCase()}
                 </div>
                 {isOpen && (
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-800 whitespace-nowrap">{userNumero}</p>
-                    <p className="text-xs text-gray-500 whitespace-nowrap">{user.role}</p>
+                    <p className="text-sm font-semibold text-gray-800 dark:text-white whitespace-nowrap">{userNumero}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{user.role}</p>
                   </div>
                 )}
                 {isOpen && (
-                  <button onClick={logout} className="text-gray-500 hover:text-red-500 transition-colors">
+                  <button onClick={logout} className="text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors">
                     <LogOut size={20} />
                   </button>
                 )}
