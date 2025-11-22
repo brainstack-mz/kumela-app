@@ -23,13 +23,18 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const isLoginPage = pathname === "/public/login";
-  const isDashboardPage = pathname.endsWith("/dashboard");
+  // Detecta todas as rotas de dashboard (incluindo sub-rotas como /seller/dashboard/profile)
+  const isDashboardPage = 
+    pathname.includes("/seller/dashboard") ||
+    pathname.includes("/buyer/dashboard") ||
+    pathname.includes("/shipper/dashboard") ||
+    pathname.endsWith("/dashboard");
   const isAdminPath = pathname.startsWith("/admin");
   
   // === NOVO: Identifica páginas legais que devem ter APENAS o Header ===
   const isLegalPage = pathname === "/termos-de-uso" || pathname === "/politicas-de-privacidade";
   
-  // Páginas públicas agora incluem as páginas legais, mas excluem o login
+  // Páginas públicas agora incluem as páginas legais, mas excluem o login e dashboards
   const isPublicPage = !isAdminPath && !isDashboardPage && !isLoginPage;
   
   // Sidebar apenas para admin (mas não renderiza AdminHeader aqui, cada dashboard gerencia seu próprio header)

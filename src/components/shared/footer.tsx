@@ -84,7 +84,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-gray-600 font-light text-sm sm:text-base text-justify mb-4">
-              Conectando agricultores e consumidores em Moçambique. A **KUMELA** é
+              Conectando agricultores e consumidores em Moçambique. A KUMELA é
               sua plataforma para uma gestão de produtos agrícolas transparente
               e eficiente, construindo um mercado melhor, juntos.
             </p>

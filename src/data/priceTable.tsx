@@ -37,7 +37,7 @@ export default function PriceTable({onClose}: PriceTableProps) {
     }, []);
 
     return (
-        <div className="fixed inset-0 bg-white z-65 p-6 overflow-y-auto">
+        <div className="h-full bg-white dark:bg-gray-900 p-6 overflow-y-auto">
             {/* Botao voltar*/}
             <button onClick={onClose}
             className="flex items-center text-blue-600 mb-4 hover:text-blue-800 transition">
