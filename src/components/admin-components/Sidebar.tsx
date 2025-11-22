@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, BarChartBig, ShoppingBag, Leaf, BookOpen, Truck, LogOut, Package, CheckCircle, Clock } from "lucide-react";
+import { Home, Users, BarChartBig, ShoppingBag, Leaf, BookOpen, Truck, LogOut, Package, CheckCircle, Clock, DollarSign } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
@@ -31,11 +31,11 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
 const getNavItems = (role: string) => {
   const adminItems = [
     { name: "Início", href: "/admin/dashboard", icon: Home },
-    { name: "Marketplace", href: "/admin/marketplace", icon: ShoppingBag },
-    { name: "Logística", href: "/admin/logistics", icon: Truck },
-    { name: "Gestão de Agricultores", href: "/admin/farmers", icon: Leaf },
-    { name: "Gestão de Usuários", href: "/admin/users", icon: Users },
-    { name: "Relatórios", href: "/admin/report", icon: BarChartBig },
+    { name: "Gestão de Produtos", href: "/admin/dashboard/products", icon: Package },
+    { name: "Gestão de Usuários", href: "/admin/dashboard/users", icon: Users },
+    { name: "Transações", href: "/admin/dashboard/transactions", icon: DollarSign },
+    { name: "Tabela de Preços", href: "/admin/dashboard/price-table", icon: BookOpen },
+    { name: "Relatórios", href: "/admin/dashboard/report", icon: BarChartBig },
   ];
   return role === "admin" ? adminItems : [];
 };
@@ -65,26 +65,18 @@ if (!user || user.role !== "admin") {
       {isOpen && (
         <div 
           onClick={onToggle} 
-          className="md:hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-30 transition-opacity duration-300"
+          className="md:hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-35 transition-opacity duration-300"
+          style={{ top: '64px' }}
         ></div>
       )}
 
-      <aside className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-800 shadow-2xl z-40 transition-all duration-300
+      <aside className={`fixed top-16 left-0 h-[calc(100vh-64px)] bg-white dark:bg-gray-800 shadow-2xl z-30 transition-all duration-300
           ${isOpen ? "w-64" : "w-20"}
           ${!isOpen ? "-translate-x-full md:translate-x-0" : "translate-x-0"}
         `}
       >
         <div className="flex flex-col h-full">
-          <div className={`flex items-center h-16 p-4 border-b border-gray-200 dark:border-gray-700 ${isOpen ? "" : "justify-center"}`}>
-            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mr-2 flex-shrink-0">
-              <Leaf className="w-5 h-5 text-white" />
-            </div>
-            <span className={`text-xl font-bold text-gray-800 dark:text-white whitespace-nowrap overflow-hidden transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}>
-              KUMELA
-            </span>
-          </div>
-
-          <nav className="p-4 flex-1">
+          <nav className="p-4 flex-1 pt-4">
             <ul className="space-y-2 font-medium">
               {navItems.map((item) => (
                 <li key={item.name}>

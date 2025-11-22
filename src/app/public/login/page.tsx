@@ -7,11 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
-import { 
-  Phone, 
-  Lock, 
-  User, 
-  MapPin, 
+import {
+  Phone,
+  Lock,
+  User,
+  MapPin,
   Truck,
   ShoppingCart,
   UserCheck,
@@ -67,18 +67,18 @@ const registrationSteps = [
 
 // Dados dos Slides (usando os ícones importados)
 const sliderData = [
-  { 
-    text: 'Pagamentos Simples e Seguros', 
+  {
+    text: 'Pagamentos Simples e Seguros',
     icon: <CreditCard className="h-12 w-12 text-white" />,
     image: '/images/slide1.jpg' // Adicione URLs de imagem reais, se necessário
   },
-  { 
-    text: 'Entrega em Todo Moçambique', 
+  {
+    text: 'Entrega em Todo Moçambique',
     icon: <Truck className="h-12 w-12 text-white" />,
-    image: '/images/slide2.jpg' 
+    image: '/images/slide2.jpg'
   },
-  { 
-    text: 'Conectando Comunidades', 
+  {
+    text: 'Conectando Comunidades',
     icon: <UserCheck className="h-12 w-12 text-white" />,
     image: '/assets/imgs/img1.jpeg'
   },
@@ -88,7 +88,7 @@ const sliderData = [
 export default function AuthPage() {
   const router = useRouter();
   const { login: authLogin } = useAuth();
-  
+
   const [authState, setAuthState] = useState<AuthState>({
     phoneNumber: '',
     password: '',
@@ -155,7 +155,7 @@ export default function AuthPage() {
   const handlePhoneChange = (value: string) => {
     // Format phone number with +258 prefix
     let cleanValue = value.replace(/[^\d+]/g, '');
-    
+
     // If user starts typing without +258, add it
     if (!cleanValue.startsWith('+258') && cleanValue.length > 0) {
       if (cleanValue.startsWith('8')) {
@@ -164,7 +164,7 @@ export default function AuthPage() {
         cleanValue = '+258' + cleanValue;
       }
     }
-    
+
     setAuthState(prev => ({
       ...prev,
       phoneNumber: cleanValue,
@@ -180,14 +180,14 @@ export default function AuthPage() {
     }
 
     setAuthState(prev => ({ ...prev, loading: true }));
-    
+
     try {
       // Simulate OTP sending
       setTimeout(() => {
-        setAuthState(prev => ({ 
-          ...prev, 
+        setAuthState(prev => ({
+          ...prev,
           showOTPField: true,
-          loading: false 
+          loading: false
         }));
         showToast('Código OTP enviado para seu telefone', 'success');
       }, 1000);
@@ -219,20 +219,20 @@ export default function AuthPage() {
     try {
       // Simulate OTP verification - accept any 6-digit code
       const isValidOTP = /^\d{6}$/.test(authState.otp);
-      
+
       if (isValidOTP) {
         // Check if user exists in mock data
         const cleanPhone = authState.phoneNumber.replace(/^\+258/, '');
         const user = loginUser(cleanPhone, 'dummy'); // We don't need password for OTP
 
-    if (user) {
+        if (user) {
           // User exists, redirect to dashboard
           showToast(`Bem-vindo, ${user.role}!`, 'success');
           setTimeout(() => {
-      const redirectUrl = DASHBOARD_URLS[user.role];
-      if (redirectUrl) {
-        router.push(redirectUrl);
-      } else {
+            const redirectUrl = DASHBOARD_URLS[user.role];
+            if (redirectUrl) {
+              router.push(redirectUrl);
+            } else {
               router.push('/admin/dashboard');
             }
           }, 1500);
@@ -268,7 +268,7 @@ export default function AuthPage() {
       // Use existing login function from lib/users.ts
       const cleanPhone = authState.phoneNumber.replace(/^\+258/, '');
       const user = loginUser(cleanPhone, authState.password);
-      
+
       if (user) {
         // Salvar no AuthContext
         authLogin(user);
@@ -299,11 +299,11 @@ export default function AuthPage() {
   // Handle registration step 1
   const handleRegistrationStep1 = () => {
     const errors: Record<string, string> = {};
-    
+
     if (!authState.registrationData.fullName.trim()) {
       errors.fullName = 'Nome completo é obrigatório';
     }
-    
+
     if (!authState.registrationData.userType) {
       errors.userType = 'Tipo de usuário é obrigatório';
     }
@@ -323,15 +323,15 @@ export default function AuthPage() {
   // Handle registration step 2
   const handleRegistrationStep2 = () => {
     const errors: Record<string, string> = {};
-    
+
     if (!authState.registrationData.province) {
       errors.province = 'Província é obrigatória';
     }
-    
+
     if (!authState.registrationData.district) {
       errors.district = 'Distrito é obrigatório';
     }
-    
+
     if (!authState.registrationData.addressDetails.trim()) {
       errors.addressDetails = 'Endereço é obrigatório';
     }
@@ -362,7 +362,7 @@ export default function AuthPage() {
         if (!passwordValidation.isValid) {
           errors.password = passwordValidation.message;
         }
-        
+
         if (password !== confirmPassword) {
           errors.confirmPassword = 'Senhas não coincidem';
         }
@@ -379,7 +379,7 @@ export default function AuthPage() {
     try {
       // Simulate user creation
       showToast('Cadastro concluído com sucesso!', 'success');
-      
+
       setTimeout(() => {
         // Redirect based on user type
         const redirectUrl = DASHBOARD_URLS[authState.registrationData.userType as keyof typeof DASHBOARD_URLS];
@@ -404,7 +404,7 @@ export default function AuthPage() {
   return (
     <div className="h-screen flex overflow-hidden">
       {/* Left side - Slider */}
- {/* Left side - Slider: Usando o componente LoginSlider importado */}
+      {/* Left side - Slider: Usando o componente LoginSlider importado */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-teal-600">
         <LoginSlider slides={sliderData} />
       </div>
@@ -451,7 +451,7 @@ export default function AuthPage() {
                     error={authState.errors.phoneNumber}
                     maxLength={15}
                   />
-                  
+
                   <p className="text-xs text-gray-500 -mt-2">
                     Digite os 9 dígitos do seu número (ex: 841234567)
                   </p>
@@ -480,7 +480,7 @@ export default function AuthPage() {
                     >
                       ← Voltar à página inicial
                     </button>
-                    
+
                     <p className="text-sm text-gray-600">
                       Não possui conta?{' '}
                       <button
@@ -621,7 +621,7 @@ export default function AuthPage() {
                     stepLabels={registrationSteps}
                   />
 
-                  {/* Step 1: Basic Info */}
+                  {/* Step 1: Basic Info ----------------------------------------------aqui */}
                   {authState.registrationStep === 1 && (
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
@@ -664,13 +664,38 @@ export default function AuthPage() {
                         required
                         error={authState.errors.userType}
                       />
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() =>
+                            setAuthState(prev => ({
+                              ...prev,
+                              isRegistering: false,         
+                              registrationStep: 1,       
+                              registrationData: {         
+                                fullName: '',
+                                userType: '',
+                                province: '',
+                                district: '',
+                                addressDetails: '',
+                                password: '',
+                                confirmPassword: '',
+                              },
+                              errors: {}
+                            }))
+                          }
+                          variant="ghost"
+                          className="flex-1"
+                        >
+                          Voltar
+                        </Button>
 
-                      <Button
-                        onClick={handleRegistrationStep1}
-                        className="w-full"
-                      >
-                        Próximo
-                      </Button>
+                        <Button
+                          onClick={handleRegistrationStep1}
+                          className="flex-1"
+                        >
+                          Próximo
+                        </Button>
+                      </div>
                     </motion.div>
                   )}
 
@@ -690,8 +715,8 @@ export default function AuthPage() {
                         value={authState.registrationData.province}
                         onChange={(value) => setAuthState(prev => ({
                           ...prev,
-                          registrationData: { 
-                            ...prev.registrationData, 
+                          registrationData: {
+                            ...prev.registrationData,
                             province: value,
                             district: '' // Reset district when province changes
                           },
@@ -783,7 +808,7 @@ export default function AuthPage() {
                         >
                           SIM
                         </Button>
-                        
+
                       </div>
 
                       {/* Password fields - only show if user wants password */}
