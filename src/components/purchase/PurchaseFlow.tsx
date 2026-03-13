@@ -149,7 +149,7 @@ export default function PurchaseFlow({ product, onClose }: PurchaseFlowProps) {
         style={{ paddingTop: '80px', paddingBottom: '20px' }}
       >
         <motion.div
-          className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-xl lg:max-w-2xl shadow-2xl relative 
+          className="  bg-white rounded-2xl w-full max-w-xl lg:max-w-2xl shadow-2xl relative 
                      p-4 sm:p-6 overflow-y-auto mx-2"
           style={{ maxHeight: 'calc(100vh - 100px)' }}
           variants={modalVariants}

@@ -192,7 +192,7 @@ export default function Footer() {
         {/* Direitos Autorais (Centralizado) */}
         <div className="border-t border-gray-300 mt-8 pt-8 flex justify-center text-center text-gray-600 text-xs">
           <p>
-            © 2025 **KUMELA**. Desenvolvido por{" "}
+            © 2025 KUMELA. Desenvolvido por{" "}
             <strong className="text-green-700">BrainStack</strong>. Todos os
             direitos reservados.
           </p>

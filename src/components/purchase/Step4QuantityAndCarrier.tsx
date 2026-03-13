@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react"; 
+import { ArrowRight, X, Truck, Hash, ChevronDown } from "lucide-react"; 
 import { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -10,6 +10,7 @@ interface Step4Props {
   purchaseData: any;
   onBack: () => void;
   onNext: (data: any) => void;
+  onClose?: () => void;
 }
 
 const CARRIERS = [
@@ -18,7 +19,7 @@ const CARRIERS = [
   { name: "Transporte Mugaby", time: "2-5 dias", price: 60 },
 ];
 
-export default function Step4QuantityAndCarrier({ product, purchaseData, onBack, onNext }: Step4Props) {
+export default function Step3QuantityAndCarrier({ product, purchaseData, onBack, onNext, onClose }: Step4Props) {
   const [quantity, setQuantity] = useState(purchaseData.quantity || 1);
   const [carrier, setCarrier] = useState(purchaseData.carrier || "");
 
@@ -32,11 +33,11 @@ export default function Step4QuantityAndCarrier({ product, purchaseData, onBack,
 
   const handleNext = () => {
     if (quantity < 1 || quantity > product.stock) {
-      toast.error(`Quantidade deve ser entre 1 e ${product.stock}!`);
+      toast.error(`Quantidade inválida (Máx: ${product.stock})`);
       return;
     }
     if (!carrier) {
-      toast.error("Selecione uma transportadora!");
+      toast.error("Selecione uma transportadora");
       return;
     }
 
@@ -52,114 +53,103 @@ export default function Step4QuantityAndCarrier({ product, purchaseData, onBack,
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="w-full"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="w-full bg-white text-gray-900 rounded-3xl overflow-hidden relative p-5 sm:p-6"
     >
-      {/* Progress Indicator - Espaçamento ajustado para mb-5 */}
-      <div className="mb-5"> 
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-green-600 dark:text-green-400">ETAPA 4 de 6</span>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Quantidade e Transporte</span>
+   
+      {/* Progress Indicator */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider">ETAPA 3 de 4</span>
+          <span className="text-[10px] text-gray-400 font-medium">Logística</span>
         </div>
-        <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-          <div className="h-2 bg-green-600 rounded-full" style={{ width: "66.6%" }}></div>
+        <div className="w-full h-1 bg-gray-100 rounded-full">
+          <div className="h-1 bg-green-500 rounded-full transition-all duration-500" style={{ width: "75%" }}></div>
         </div>
       </div>
 
-      {/* Conteúdo Principal - Espaçamento reduzido para space-y-5 */}
-      <div className="space-y-5"> 
-        
-        {/* Quantidade - space-y-3 */}
+      <div className="space-y-4">
+        <div className="text-center mb-2">
+          <div className="inline-flex items-center justify-center w-10 h-10 bg-green-50 rounded-full mb-2">
+            <Truck className="w-5 h-5 text-green-600" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-800 leading-tight">Envio e Quantidade</h2>
+          <p className="text-[12px] text-gray-500">Quanto e como deseja receber?</p>
+        </div>
+
         <div className="space-y-3">
-          <div>
-            {/* Asterisco * removido */}
-            <label htmlFor="quantity-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> {/* Reduzido mb-2 para mb-1 */}
-              Quantidade ({product.unit})
-            </label>
+          {/* Campo Quantidade */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center ml-1">
+              <label className="text-[11px] font-bold text-gray-500 uppercase flex items-center gap-1.5">
+                <Hash size={12} /> Quantidade ({product.unit})
+              </label>
+              <span className="text-[13px] text-green-900">Stock: {product.stock}</span>
+            </div>
             <input
-              id="quantity-input"
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(Math.max(1, Math.min(product.stock, parseInt(e.target.value) || 1)))}
-              className="w-full py-3 px-4 text-lg font-semibold border-2 rounded-xl focus:outline-none focus:border-green-500 bg-white dark:bg-gray-700 dark:text-white text-center" // Reduzido p-4 para py-3
+              className="w-full h-11 px-4 text-base font-bold border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-green-500 outline-none transition-all"
               min={1}
               max={product.stock}
-              placeholder="Digite a quantidade"
             />
           </div>
-          
-          <p className="text-center text-xs text-gray-500 dark:text-gray-400"> {/* Reduzido text-sm para text-xs */}
-            Stock disponível: **{product.stock}** {product.unit}
-          </p>
-        </div>
 
-        {/* Transportadora - space-y-3 */}
-        <div className="space-y-3">
-          <div>
-            {/* Asterisco * removido */}
-            <label htmlFor="carrier-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"> {/* Reduzido mb-2 para mb-1 */}
-              Selecione a Transportadora
-            </label>
-            <select
-              id="carrier-select"
-              value={carrier}
-              onChange={(e) => setCarrier(e.target.value)}
-              className="w-full py-3 px-4 text-base border-2 rounded-xl bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:border-green-500" // Reduzido p-4 para py-3
-            >
-              <option value="">Selecione a Transportadora</option>
-              {CARRIERS.map((c) => (
-                <option key={c.name} value={c.name}>
-                  {c.name} - {c.time} - {c.price} MT
-                </option>
-              ))}
-            </select>
-            {carrier && selectedCarrier && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                Tempo estimado: **{selectedCarrier.time}** | Custo: **{selectedCarrier.price} MT**
-              </p>
-            )}
+          {/* Seleção de Transportadora */}
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-gray-500 uppercase ml-1">Transportadora</label>
+            <div className="relative">
+              <select
+                value={carrier}
+                onChange={(e) => setCarrier(e.target.value)}
+                className="w-full h-11 px-4 appearance-none text-sm border border-gray-200 rounded-xl bg-white focus:border-green-500 outline-none transition-all pr-10"
+              >
+                <option value="">Selecione quem entrega</option>
+                {CARRIERS.map((c) => (
+                  <option key={c.name} value={c.name}>
+                    {c.name} (+{c.price} MT)
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+            </div>
           </div>
         </div>
 
-        {/* Total Preview - Mantido p-4, mas com margem superior reduzida */}
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 shadow-lg">
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700 dark:text-gray-300 font-semibold text-sm">Subtotal ({quantity} {product.unit}):</span>
-              <span className="font-bold text-md">{subtotal.toFixed(0)} MT</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700 dark:text-gray-300 font-semibold text-sm">Transporte:</span>
-              <span className="font-bold text-md">{shipping.toFixed(0)} MT</span>
-            </div>
-            {/* Ajustei o padding superior aqui para manter o espaço */}
-            <div className="flex justify-between items-center pt-2 border-t-2 border-green-200 dark:border-green-800">
-              <span className="font-bold text-lg text-gray-900 dark:text-white">Total Geral:</span>
-              <span className="font-bold text-xl text-green-600 dark:text-green-400">
-                {total.toFixed(0)} MT
-              </span>
-            </div>
+        {/* Resumo de Preços (Preview) */}
+        <div className="bg-emerald-50 rounded-2xl p-4 space-y-2 border border-emerald-100">
+          <div className="flex justify-between text-[11px] text-emerald-800">
+            <span>Subtotal ({quantity}x):</span>
+            <span className="font-bold">{subtotal.toFixed(0)} MT</span>
+          </div>
+          <div className="flex justify-between text-[11px] text-emerald-800">
+            <span>Custo de Entrega:</span>
+            <span className="font-bold">{shipping.toFixed(0)} MT</span>
+          </div>
+          <div className="flex justify-between pt-2 border-t border-emerald-200/50">
+            <span className="text-sm font-bold text-emerald-900">Total a Pagar:</span>
+            <span className="text-lg font-black text-emerald-600">{total.toFixed(0)} MT</span>
           </div>
         </div>
       </div>
 
-      {/* Navigation - Margem superior reduzida para mt-5 e gap-3 */}
-      <div className="mt-5 flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      {/* Navegação */}
+      <div className="mt-6 flex gap-3">
         <button
           onClick={onBack}
-          className="flex-1 px-6 py-3 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors shadow-md"
+          className="flex-1 h-12 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition-all"
         >
-          <ArrowLeft className="w-5 h-5 inline mr-2" /> Voltar
+          Voltar
         </button>
         <button
           onClick={handleNext}
           disabled={!carrier || quantity < 1}
-          className="flex-1 px-6 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/50"
+          className="flex-[2] h-12 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 shadow-md shadow-green-100"
         >
           Próximo
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </motion.div>

@@ -1,23 +1,24 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, User, Phone } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, User, Phone, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getUserByPhoneNumber } from "@/lib/users";
 import toast from "react-hot-toast";
 
 interface Step2Props {
-  product: any;
+  product?: any;
   purchaseData: {
     phone: string;
     name: string;
   };
   onBack: () => void;
   onNext: (data: any) => void;
+  onClose?: () => void; // Adicionado para o X de fechamento
 }
 
-export default function Step2Identification({ product, purchaseData, onBack, onNext }: Step2Props) {
+export default function Step2Identification({ purchaseData, onNext, onClose }: Step2Props) {
   const { user } = useAuth();
   const [phone, setPhone] = useState(purchaseData.phone || "");
   const [name, setName] = useState(purchaseData.name || "");
@@ -36,10 +37,10 @@ export default function Step2Identification({ product, purchaseData, onBack, onN
   }, [user]);
 
   const handlePhoneChange = async (value: string) => {
-    setPhone(value);
-    const cleanPhone = value.replace(/\D/g, '');
+    const cleanPhone = value.replace(/\D/g, '').slice(0, 9);
+    setPhone(cleanPhone);
     
-    if (cleanPhone.length >= 9) {
+    if (cleanPhone.length === 9) {
       setIsCheckingPhone(true);
       setTimeout(() => {
         const foundUser = getUserByPhoneNumber(cleanPhone);
@@ -47,14 +48,13 @@ export default function Step2Identification({ product, purchaseData, onBack, onN
           setName((foundUser as any).name || `Usuário ${foundUser.numero}`);
           setUserExists(true);
           setShowNameField(false);
-          toast.success("Usuário encontrado! Nome preenchido automaticamente.");
         } else {
           setUserExists(false);
           setShowNameField(true);
           setName("");
         }
         setIsCheckingPhone(false);
-      }, 500);
+      }, 400);
     } else {
       setShowNameField(false);
       setUserExists(false);
@@ -62,59 +62,45 @@ export default function Step2Identification({ product, purchaseData, onBack, onN
   };
 
   const handleNext = () => {
-    if (!phone || phone.length < 9) {
-      toast.error("Digite um número de telefone válido!");
-      return;
-    }
-    if (!name || name.trim() === "") {
-      toast.error("Digite seu nome completo!");
-      return;
-    }
-
-    onNext({
-      phone: phone.replace(/\D/g, ''),
-      name: name.trim(),
-      userExists,
-    });
+    if (phone.length < 9) return toast.error("Número inválido");
+    if (!name.trim()) return toast.error("Nome obrigatório");
+    onNext({ phone, name: name.trim(), userExists });
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="w-full"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="w-full bg-white text-gray-900 rounded-3xl overflow-hidden relative p-5 sm:p-6"
     >
-      {/* Progress Indicator */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-green-600 dark:text-green-400">ETAPA 2 de 5</span>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Identificação</span>
+      {/* Botão de Fechar */}
+      
+
+      {/* Progress Indicator - Mais compacto */}
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider">ETAPA 1 de 4</span>
+          <span className="text-[10px] text-gray-400 font-medium">Identificação</span>
         </div>
-        <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-          <div className="h-2 bg-green-600 rounded-full" style={{ width: "40%" }}></div>
+        <div className="w-full h-1 bg-gray-100 rounded-full">
+          <div className="h-1 bg-green-500 rounded-full transition-all duration-500" style={{ width: "25%" }}></div>
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="text-center mb-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full mb-3">
-            <User className="w-6 h-6 text-green-600 dark:text-green-400" />
+      <div className="space-y-4">
+        <div className="text-center mb-2">
+          <div className="inline-flex items-center justify-center w-10 h-10 bg-green-50 rounded-full mb-2">
+            <User className="w-5 h-5 text-green-600" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-            Identificação
-          </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {user ? "Seus dados estão bloqueados" : "Digite seu número de telefone"}
-          </p>
+          <h2 className="text-lg font-bold text-gray-800 leading-tight">Identificação</h2>
+          <p className="text-[12px] text-gray-500">Digite seu número de telefone</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
             {/* Campo Telefone */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                <Phone className="w-4 h-4 inline mr-2" />
-                Número de Telefone
+            <div className="space-y-1">
+              <label className="flex items-center text-[11px] font-bold text-gray-500 uppercase ml-1">
+                <Phone className="w-3 h-3 mr-1.5" /> Número de Telefone
               </label>
               <input
                 type="tel"
@@ -122,83 +108,59 @@ export default function Step2Identification({ product, purchaseData, onBack, onN
                 onChange={(e) => handlePhoneChange(e.target.value)}
                 disabled={!!user}
                 placeholder="84xxxxxxx"
-                className="w-full p-4 text-lg border-2 rounded-xl bg-gray-50 dark:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:border-green-500"
+                className="w-full h-11 px-4 text-base border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-green-500 outline-none transition-all disabled:opacity-60"
               />
-              {isCheckingPhone && (
-                <p className="text-sm text-gray-500 mt-2 flex items-center gap-2">
-                  <span className="animate-spin">⏳</span> Verificando...
-                </p>
-              )}
-              {userExists && !user && (
-                <p className="text-sm text-green-600 dark:text-green-400 mt-2 flex items-center gap-2">
-                  ✓ Usuário encontrado! Nome preenchido automaticamente.
-                </p>
-              )}
+              {isCheckingPhone && <p className="text-[10px] text-gray-400 ml-1 animate-pulse">Verificando número...</p>}
             </div>
 
-            {/* Campo Nome - só aparece se número não existe ou se não está logado e número não existe */}
-            {(showNameField || (!user && !userExists && phone.length >= 9)) && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="space-y-2"
-              >
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  <User className="w-4 h-4 inline mr-2" />
-                  Nome Completo
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Seu nome completo"
-                  className="w-full p-4 text-lg border-2 rounded-xl bg-white dark:bg-gray-700 focus:outline-none focus:border-green-500"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Uma conta será criada automaticamente com este número e nome
-                </p>
-              </motion.div>
-            )}
+            {/* Campo Nome com Animação Compacta */}
+            <AnimatePresence>
+              {(showNameField || (!user && !userExists && phone.length >= 9)) && (
+                <motion.div
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="space-y-1"
+                >
+                  <label className="flex items-center text-[11px] font-bold text-gray-500 uppercase ml-1">
+                    <User className="w-3 h-3 mr-1.5" /> Nome Completo
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Seu nome completo"
+                    className="w-full h-11 px-4 text-base border border-gray-200 rounded-xl bg-white focus:border-green-500 outline-none transition-all"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {/* Nome bloqueado se usuário existe */}
+            {/* Nome bloqueado para usuário existente */}
             {userExists && !showNameField && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  <User className="w-4 h-4 inline mr-2" />
-                  Nome Completo
+              <div className="space-y-1">
+                <label className="flex items-center text-[11px] font-bold text-gray-500 uppercase ml-1">
+                  <User className="w-3 h-3 mr-1.5" /> Nome do Cliente
                 </label>
-                <input
-                  type="text"
-                  value={name}
-                  disabled
-                  className="w-full p-4 text-lg border-2 rounded-xl bg-gray-100 dark:bg-gray-700 opacity-50 cursor-not-allowed"
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                  Nome bloqueado - usuário já cadastrado
-                </p>
+                <div className="w-full h-11 px-4 flex items-center border border-gray-100 rounded-xl bg-gray-50 text-gray-400 text-sm font-medium">
+                  {name}
+                </div>
+                <p className="text-[10px] text-green-600 font-medium ml-1">✓ Usuário encontrado</p>
               </div>
             )}
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="mt-6 flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-        <button
-          onClick={onBack}
-          className="flex-1 px-6 py-3 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-        >
-          Voltar
-        </button>
+      <div className="mt-6">
         <button
           onClick={handleNext}
-          disabled={!phone || phone.length < 9 || !name}
-          className="flex-1 px-6 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={phone.length < 9 || !name || isCheckingPhone}
+          className="w-full h-12 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:grayscale cursor-pointer shadow-md shadow-green-100"
         >
           Próximo
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-4 h-4" />
         </button>
       </div>
     </motion.div>
   );
 }
-

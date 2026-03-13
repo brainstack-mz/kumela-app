@@ -13,9 +13,9 @@ export interface User {
 // Isso torna o redirecionamento centralizado e fácil de manter.
 export const DASHBOARD_URLS = {
   admin: "/admin/dashboard",
-  buyer: "/buyer/dashboard",
+  buyer: "/seller/dashboard",
   seller: "/seller/dashboard",
-  shipper: "/shipper/dashboard",
+  shipper: "/seller/dashboard",
 };
 
  
@@ -27,7 +27,9 @@ export const USERS: User[] = [
   { numero: "841112233", password: "123456", role: "buyer", name: "Ana Compradora", province: "Nampula", district: "Angoche" },
   { numero: "842223344", password: "123456", role: "buyer", name: "Pedro Cliente", province: "Nampula", district: "Moma" },
   { numero: "843334455", password: "123456", role: "seller", name: "Sofia Vendedora", province: "Nampula", district: "Mecuburi" },
-  { numero: "844445566", password: "123456", role: "shipper", name: "Lucas Transportador", province: "Nampula", district: "Meconta" },
+  { numero: "870570364", password: "123456", role: "buyer", name: "Shelcia Victor", province: "Nampula", district: "Meconta" },    
+  { numero: "851112233", password: "transportador123", role: "shipper", name: "Carlos Transportador", province: "Nampula", district: "Mossuril" },
+
 ];
 
 // Função para obter usuário por número

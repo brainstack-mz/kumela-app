@@ -1,7 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle, ArrowLeft, ArrowRight, Package, MapPin, Truck, User, Phone } from "lucide-react";
+import {
+  CheckCircle,
+  ArrowRight,
+  Package,
+  MapPin,
+  Truck,
+  User,
+  Phone,
+  X,
+  ShieldCheck,
+} from "lucide-react";
 import Image from "next/image";
 
 interface Step5Props {
@@ -9,49 +19,66 @@ interface Step5Props {
   purchaseData: any;
   onBack: () => void;
   onNext: (data: any) => void;
+  onClose?: () => void;
 }
 
-export default function Step5Review({ product, purchaseData, onBack, onNext }: Step5Props) {
+export default function Step5Review({
+  product,
+  purchaseData,
+  onBack,
+  onNext,
+  onClose,
+}: Step5Props) {
+  const unitPrice = (purchaseData.subtotal || 0) / (purchaseData.quantity || 1);
+
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="w-full"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="w-full bg-white text-gray-900 rounded-3xl relative flex flex-col max-h-[90vh]"
     >
-      {/* Progress Indicator */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-green-600 dark:text-green-400">ETAPA 5 de 6</span>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Revisão da Compra</span>
+      {/* Header Fixo */}
+      <div className="p-6 pb-2 border-b border-gray-50">
+        <div className="mb-2">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-bold text-green-600 uppercase tracking-widest">
+              ETAPA 4 de 4
+            </span>
+
+            <span className="text-xs text-gray-400">Revisão Final</span>
+          </div>
+          <div className="w-full h-1.5 bg-gray-100 rounded-full">
+            <div
+              className="h-1.5 bg-green-500 rounded-full transition-all duration-700"
+              style={{ width: "100%" }}
+            ></div>
+          </div>
         </div>
-        <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-          <div className="h-2 bg-green-600 rounded-full" style={{ width: "83.3%" }}></div>
+        <div className="text-center ">
+          <div className="inline-flex items-center justify-center w-10 h-10 bg-green-100 rounded-full mb-3">
+            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+          </div>
         </div>
+        <h2 className="text-lg text-center font-bold text-gray-800 leading-tight">
+          Revise sua Compra
+        </h2>
+        <p className="text-[12px] text-center text-gray-500">
+          Confirme se tudo está correto antes de pagar.
+        </p>
       </div>
 
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full mb-3">
-            <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+      {/* Área de Conteúdo com Scroll */}
+      <div className="flex-1 overflow-y-auto p-6 pt-4 space-y-6 custom-scrollbar">
+        {/* Seção Produto */}
+        <section className="space-y-3">
+          <div className="flex items-center gap-2 text-gray-400">
+            <Package size={16} />
+            <span className="text-xs font-bold uppercase tracking-tighter">
+              Item do Pedido
+            </span>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Revise sua Compra
-          </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Verifique todos os detalhes antes de confirmar
-          </p>
-        </div>
-
-        {/* Product Summary */}
-        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-center gap-2 mb-3">
-            <Package className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Produto</h3>
-          </div>
-          <div className="flex gap-4">
-            <div className="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 border-2 border-gray-200 dark:border-gray-600">
+          <div className="flex gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+            <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 shadow-sm border border-white">
               <Image
                 src={product.image}
                 alt={product.name}
@@ -59,133 +86,134 @@ export default function Step5Review({ product, purchaseData, onBack, onNext }: S
                 className="object-cover"
               />
             </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-base font-bold text-gray-900 dark:text-white mb-1">
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+              <h4 className="text-base font-bold text-gray-800 leading-tight">
                 {product.name}
               </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+              <p className="text-xs text-gray-500 mt-1 line-clamp-2">
                 {product.description}
               </p>
-              <div className="space-y-1 text-xs">
-                <p className="text-gray-500 dark:text-gray-400">
-                  <strong>Vendedor:</strong> {product.seller}
-                </p>
-                <p className="text-gray-500 dark:text-gray-400">
-                  <strong>Categoria:</strong> {product.category || "N/A"}
-                </p>
+              <p className="text-[11px] text-green-600 font-bold mt-1">
+                Vendido por: {product.seller}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Seção Entrega e Cliente */}
+        <section className="grid grid-cols-1 gap-4">
+          <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-3">
+            <div className="flex items-center gap-2 text-gray-400 border-b border-gray-50 pb-2">
+              <User size={16} />
+              <span className="text-xs font-bold uppercase tracking-tighter">
+                Dados de Entrega
+              </span>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
+                  <User size={14} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase font-bold">
+                    Destinatário
+                  </p>
+                  <p className="text-sm font-semibold text-gray-700">
+                    {purchaseData.name}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
+                  <Phone size={14} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase font-bold">
+                    Contacto
+                  </p>
+                  <p className="text-sm font-semibold text-gray-700">
+                    {purchaseData.phone}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
+                  <MapPin size={14} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase font-bold">
+                    Endereço
+                  </p>
+                  <p className="text-sm font-semibold text-gray-700">
+                    {purchaseData.province}, {purchaseData.district} -{" "}
+                    {purchaseData.bairro}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Order Details */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-          <div className="flex items-center gap-2 mb-3">
-            <Truck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Detalhes do Pedido</h3>
+        {/* Resumo Financeiro */}
+        <section className="p-5 bg-emerald-50 rounded-2xl border border-emerald-100 text-black shadow-lg shadow-green-100">
+          <div className="flex items-center gap-2 mb-4 opacity-80">
+            <Truck size={16} />
+            <span className="text-xs font-bold uppercase tracking-tighter">
+              Resumo de Valores
+            </span>
           </div>
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Quantidade:</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {purchaseData.quantity} {product.unit}
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="opacity-90">
+                Subtotal ({purchaseData.quantity} itens)
+              </span>
+              <span className="font-bold">
+                {purchaseData.subtotal.toFixed(0)} MT
               </span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Preço Unitário:</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {((purchaseData.subtotal || 0) / (purchaseData.quantity || 1)).toFixed(0)} MT
+            <div className="flex justify-between text-sm">
+              <span className="opacity-90">
+                Transporte ({purchaseData.carrier})
+              </span>
+              <span className="font-bold">
+                {purchaseData.shipping.toFixed(0)} MT
               </span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Subtotal:</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {(purchaseData.subtotal || 0).toFixed(0)} MT
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600 dark:text-gray-400">Transporte:</span>
-              <span className="font-semibold text-gray-900 dark:text-white">
-                {(purchaseData.shipping || 0).toFixed(0)} MT
-              </span>
-            </div>
-            <div className="flex justify-between items-center pt-3 border-t-2 border-blue-200 dark:border-blue-800">
-              <span className="text-lg font-bold text-gray-900 dark:text-white">Total Geral:</span>
-              <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <div className="pt-3 mt-3 border-t border-white/20 flex justify-between items-end">
+              <span className="text-base font-bold">Total Geral</span>
+              <span className="text-3xl font-black">
                 {(purchaseData.total || 0).toFixed(0)} MT
               </span>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Customer Info */}
-        <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-center gap-2 mb-3">
-            <User className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Seus Dados</h3>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4 text-gray-500" />
-              <div className="flex-1">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Nome Completo</span>
-                <p className="font-semibold text-gray-900 dark:text-white">{purchaseData.name || "N/A"}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-gray-500" />
-              <div className="flex-1">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Telefone</span>
-                <p className="font-semibold text-gray-900 dark:text-white">{purchaseData.phone || "N/A"}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-gray-500" />
-              <div className="flex-1">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Localização</span>
-                <p className="font-semibold text-gray-900 dark:text-white">
-                  {purchaseData.province || "Nampula"}, {purchaseData.district || "N/A"}
-                  {purchaseData.bairro && ` - ${purchaseData.bairro}`}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Truck className="w-4 h-4 text-gray-500" />
-              <div className="flex-1">
-                <span className="text-xs text-gray-500 dark:text-gray-400">Transportadora</span>
-                <p className="font-semibold text-gray-900 dark:text-white">{purchaseData.carrier || "N/A"}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Security Message */}
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 flex items-start gap-2">
-          <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-gray-700 dark:text-gray-300">
-            Seu pagamento ficará seguro até a confirmação da entrega. Você pode revisar todos os detalhes acima antes de finalizar.
+        {/* Selo de Segurança */}
+        <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+          <ShieldCheck className="text-emerald-600 flex-shrink-0" size={24} />
+          <p className="text-xs text-emerald-800 leading-relaxed italic">
+            <strong>Compra Garantida:</strong> Seu dinheiro está seguro. O
+            vendedor só recebe após você confirmar a entrega.
           </p>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="mt-6 flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      {/* Footer Fixo com Botões */}
+      <div className="p-6 border-t border-gray-50 flex gap-4 bg-white rounded-b-3xl">
         <button
           onClick={onBack}
-          className="flex-1 px-6 py-3 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          className="flex-1 h-14 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold text-base hover:bg-gray-50 transition-all"
         >
           Voltar
         </button>
         <button
           onClick={() => onNext(purchaseData)}
-          className="flex-1 px-6 py-3 rounded-xl bg-green-600 text-white font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+          className="flex-[2] h-14 rounded-2xl bg-green-600 text-white font-bold text-base hover:bg-green-700 active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-xl shadow-green-100"
         >
-          Confirmar e Continuar
-          <ArrowRight className="w-5 h-5" />
+          Finalizar Pedido
+          <ArrowRight size={20} />
         </button>
       </div>
     </motion.div>
   );
 }
-
-

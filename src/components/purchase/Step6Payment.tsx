@@ -115,8 +115,8 @@ export default function Step6Payment({ purchaseData, onBack, onNext }: Step6Prop
       {/* Progress Indicator */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-green-600 dark:text-green-400">ETAPA 6 de 6</span>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Método de Pagamento</span>
+          <span className="text-sm font-semibold text-green-600 dark:text-green-400">ETAPA 5 de 5</span>
+          <span className="text-sm text-gray-600 ">Método de Pagamento</span>
         </div>
         <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
           <div className="h-2 bg-green-600 rounded-full" style={{ width: "100%" }}></div>
@@ -127,14 +127,14 @@ export default function Step6Payment({ purchaseData, onBack, onNext }: Step6Prop
         {/* Escrow Message */}
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 flex items-start gap-2">
           <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-gray-700 dark:text-gray-300">
+          <p className="text-xs text-gray-700  ">
             Seu dinheiro fica seguro. Só será entregue ao vendedor após confirmação da entrega.
           </p>
         </div>
 
         {/* Total Amount */}
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 text-center">
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Total a Pagar</p>
+        <div className="bg-green-50  rounded-xl p-4 text-center">
+          <p className="text-xs text-gray-600   mb-1">Total a Pagar</p>
           <p className="text-3xl font-bold text-green-600 dark:text-green-400">
             {purchaseData.total.toFixed(0)} MT
           </p>
@@ -142,7 +142,7 @@ export default function Step6Payment({ purchaseData, onBack, onNext }: Step6Prop
 
         {/* Payment Methods */}
         <div>
-          <h2 className="text-base font-bold mb-3 text-gray-900 dark:text-white">
+          <h2 className="text-base font-bold mb-3 text-gray-900  ">
             Método de Pagamento
           </h2>
           <div className="space-y-2">
@@ -152,13 +152,13 @@ export default function Step6Payment({ purchaseData, onBack, onNext }: Step6Prop
                 onClick={() => setPaymentMethod(method.id)}
                 className={`w-full p-3 border-2 rounded-xl text-left transition-all ${
                   paymentMethod === method.id
-                    ? "border-green-600 bg-green-50 dark:bg-green-900/20"
+                    ? "border-green-600 bg-green-50  "
                     : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{method.icon}</span>
-                  <span className="text-base font-bold text-gray-900 dark:text-white">
+                  <span className="text-base font-bold text-gray-900  ">
                     {method.name}
                   </span>
                 </div>
@@ -175,7 +175,7 @@ export default function Step6Payment({ purchaseData, onBack, onNext }: Step6Prop
             className="space-y-3"
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700   mb-2">
                 Número da Carteira
               </label>
               <input
@@ -183,16 +183,16 @@ export default function Step6Payment({ purchaseData, onBack, onNext }: Step6Prop
                 value={paymentNumber}
                 onChange={(e) => setPaymentNumber(formatPaymentNumber(e.target.value))}
                 placeholder={paymentMethod === "mpesa" ? "+258841234567" : "+258871234567"}
-                className="w-full p-3 text-base border-2 rounded-xl bg-white dark:bg-gray-700 focus:outline-none focus:border-green-500"
+                className="w-full p-3 text-base border-2 rounded-xl bg-white   focus:outline-none focus:border-green-500"
               />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="text-xs text-gray-500   mt-1">
                 {paymentMethod === "mpesa" 
                   ? "M-Pesa: inicia com 84 ou 85 (ex: +258841234567)" 
                   : "E-Mola: inicia com 87 ou 86 (ex: +258871234567)"}
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700   mb-2">
                 Senha
               </label>
               <input
@@ -200,7 +200,7 @@ export default function Step6Payment({ purchaseData, onBack, onNext }: Step6Prop
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Digite sua senha"
-                className="w-full p-3 text-base border-2 rounded-xl bg-white dark:bg-gray-700 focus:outline-none focus:border-green-500"
+                className="w-full p-3 text-base border-2 rounded-xl bg-white   focus:outline-none focus:border-green-500"
               />
             </div>
           </motion.div>
@@ -209,17 +209,17 @@ export default function Step6Payment({ purchaseData, onBack, onNext }: Step6Prop
         {/* Final Message */}
         <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-3 flex items-start gap-2">
           <CheckCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-gray-700 dark:text-gray-300">
+          <p className="text-xs text-gray-700 ">
             Após receber o produto, acesse sua conta para confirmar o recebimento e liberar o pagamento ao vendedor.
           </p>
         </div>
       </div>
 
       {/* Navigation */}
-      <div className="mt-6 flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div className="mt-6 flex gap-3 pt-4 border-t border-gray-200  ">
         <button
           onClick={onBack}
-          className="flex-1 px-6 py-3 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          className="flex-1 px-6 py-3 rounded-xl bg-gray-200   text-gray-700  font-bold hover:bg-gray-300 transition-colors"
         >
           Voltar
         </button>

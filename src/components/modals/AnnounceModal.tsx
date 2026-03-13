@@ -43,7 +43,7 @@ const AnnounceModal: React.FC<AnnounceModalProps> = ({ isOpen, onClose }) => {
               {/* O botão "X" agora é relativo ao card do SmartForm */}
               <button
                 onClick={onClose}
-                className="absolute top-3 right-3 z-[55] bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full p-2
+                className="absolute top-3 right-3 z-[55] bg-white/30 cursor-pointer backdrop-blur-md rounded-full p-2
                            hover:bg-red-500 hover:text-white transition-colors duration-200"
                 aria-label="Fechar"
                 style={{ WebkitTapHighlightColor: "transparent" }}

@@ -16,7 +16,7 @@ interface UnifiedDashboardHeaderProps {
 }
 
 export default function UnifiedDashboardHeader({
-  title,
+  
   onMenuClick,
   isSidebarOpen = false,
   showSidebarToggle = false,
@@ -41,15 +41,7 @@ export default function UnifiedDashboardHeader({
     router.push("/public/login");
   };
 
-  const getRoleLabel = (role: string) => {
-    const labels: Record<string, string> = {
-      admin: "Administrador",
-      buyer: "Cliente",
-      seller: "Vendedor",
-      shipper: "Transportador",
-    };
-    return labels[role] || role;
-  };
+ 
 
   return (
     <>
@@ -78,9 +70,7 @@ export default function UnifiedDashboardHeader({
           </div>
           
           {/* Título do Dashboard */}
-          <h1 className="text-base md:text-lg lg:text-xl font-bold text-green-600 dark:text-green-400 tracking-wide truncate hidden lg:block ml-2 md:ml-4">
-            {title}
-          </h1>
+        
         </div>
 
         {/* Barra de Pesquisa Centralizada */}
@@ -174,16 +164,14 @@ export default function UnifiedDashboardHeader({
                 <p className="text-xs md:text-sm font-semibold text-gray-900 dark:text-white truncate max-w-[100px]">
                   {user?.name || user?.numero || "Usuário"}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[100px]">
-                  {getRoleLabel(user?.role || "")}
-                </p>
+                 
               </div>
             </button>
             {profileDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
                 <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">{user?.name || user?.numero}</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{getRoleLabel(user?.role || "")}</p>
+                   
                 </div>
                 <button
                   onClick={() => {

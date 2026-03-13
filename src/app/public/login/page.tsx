@@ -1,893 +1,376 @@
-'use client';
+"use client";
 
-// O LoginSlider reescrito agora lida com as animações de slide
-import LoginSlider from '@/components/login-components/LoginSlider';
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import toast from "react-hot-toast";
 import {
   Phone,
   Lock,
-  User,
-  MapPin,
+  CreditCard,
   Truck,
-  ShoppingCart,
   UserCheck,
-  CreditCard // Novo ícone para slide
-} from 'lucide-react';
+  Eye,
+  EyeOff,
+  User as UserIcon,
+  MapPin,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+} from "lucide-react";
 
 // Components
-import { Input } from '@/components/shared/Input';
-import { Button } from '@/components/shared/Button';
-import { Select } from '@/components/shared/Select';
-import { StepIndicator } from '@/components/shared/StepIndicator';
+import LoginSlider from "@/components/login-components/LoginSlider";
+import OTPInput from "@/components/shared/OTPInput";
+import { Input } from "@/components/shared/Input";
+import { Button } from "@/components/shared/Button";
 
-// Data
-import { provincesData } from '@/data/provincesData';
-import { loginUser, DASHBOARD_URLS } from '@/lib/users';
-import { useAuth } from '@/context/AuthContext';
+// Data & Libs
+import {
+  loginUser,
+  getUserByPhoneNumber,
+  DASHBOARD_URLS,
+  User,
+} from "@/lib/users";
+import { useAuth } from "@/context/AuthContext";
+import { provincesData } from "@/data/provincesData";
 
-// Tipos (mantidos inalterados)
-interface AuthState {
-  phoneNumber: string;
-  password: string;
-  otp: string;
-  showPassword: boolean;
-  showOTPField: boolean;
-  showPasswordField: boolean;
-  isRegistering: boolean;
-  registrationStep: number;
-  wantsPassword: boolean;
-  registrationData: {
-    fullName: string;
-    userType: string;
-    province: string;
-    district: string;
-    addressDetails: string;
-    password: string;
-    confirmPassword: string;
-  };
-  errors: Record<string, string>;
-  loading: boolean;
-}
-
-const userTypes = [
-  { value: 'seller', label: 'Vendedor', icon: ShoppingCart },
-  { value: 'shipper', label: 'Transportador', icon: Truck },
-  { value: 'buyer', label: 'Cliente', icon: UserCheck },
-];
-
-const registrationSteps = [
-  'Informações Básicas',
-  'Localização',
-  'Definir Senha'
-];
-
-// Dados dos Slides (usando os ícones importados)
 const sliderData = [
   {
-    text: 'Pagamentos Simples e Seguros',
+    text: "Pagamentos Simples e Seguros",
     icon: <CreditCard className="h-12 w-12 text-white" />,
-    image: '/images/slide1.jpg' // Adicione URLs de imagem reais, se necessário
+    image: "/assets/imgs/slide1.jpeg",
   },
   {
-    text: 'Entrega em Todo Moçambique',
+    text: "Entrega em Todo Moçambique",
     icon: <Truck className="h-12 w-12 text-white" />,
-    image: '/images/slide2.jpg'
+    image: "/assets/imgs/slide2.jpeg",
   },
   {
-    text: 'Conectando Comunidades',
+    text: "Conectando Comunidades",
     icon: <UserCheck className="h-12 w-12 text-white" />,
-    image: '/assets/imgs/img1.jpeg'
+    image: "/assets/imgs/img1.jpeg",
   },
 ];
-
 
 export default function AuthPage() {
   const router = useRouter();
   const { login: authLogin } = useAuth();
 
-  const [authState, setAuthState] = useState<AuthState>({
-    phoneNumber: '',
-    password: '',
-    otp: '',
-    showPassword: false,
-    showOTPField: false,
-    showPasswordField: false,
-    isRegistering: false,
-    registrationStep: 1,
-    wantsPassword: false,
-    registrationData: {
-      fullName: '',
-      userType: '',
-      province: '',
-      district: '',
-      addressDetails: '',
-      password: '',
-      confirmPassword: '',
-    },
-    errors: {},
-    loading: false,
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<
+    "initial" | "password_entry" | "otp_entry" | "registration"
+  >("initial");
+  const [regStep, setRegStep] = useState(1);
+  const [isNewUser, setIsNewUser] = useState(false);
+
+  const [registerData, setRegisterData] = useState({
+    name: "",
+    lastName: "",
+    province: "Nampula",
+    district: "",
+    address: "",
   });
 
+  const districts =
+    provincesData.find((p) => p.name === "Nampula")?.districts || [];
 
-  // Phone number validation
-  const validatePhoneNumber = (phone: string): boolean => {
-    // Remove +258 prefix if present
-    const cleanPhone = phone.replace(/^\+258/, '');
-    // Validate 9 digits starting with 82, 83, 84, 85, 86, or 87
-    return /^(82|83|84|85|86|87)\d{7}$/.test(cleanPhone);
+  const getPurePhone = (phone: string) => {
+    let pure = phone.replace(/\s/g, "").replace(/\D/g, "");
+    if (pure.startsWith("258")) pure = pure.substring(3);
+    return pure;
   };
 
-  // Password strength validation
-  const validatePassword = (password: string): { isValid: boolean; message: string } => {
-    if (password.length < 6) {
-      return { isValid: false, message: 'Senha deve ter pelo menos 6 caracteres' };
-    }
-    if (!/(?=.*[a-z])/.test(password)) {
-      return { isValid: false, message: 'Senha deve conter pelo menos uma letra minúscula' };
-    }
-    if (!/(?=.*[A-Z])/.test(password)) {
-      return { isValid: false, message: 'Senha deve conter pelo menos uma letra maiúscula' };
-    }
-    if (!/(?=.*\d)/.test(password)) {
-      return { isValid: false, message: 'Senha deve conter pelo menos um número' };
-    }
-    return { isValid: true, message: 'Senha forte' };
+  const validatePhone = (phone: string) => {
+    const pure = getPurePhone(phone);
+    const validPrefixes = ["82", "83", "84", "85", "86", "87"];
+    return (
+      pure.length === 9 &&
+      validPrefixes.some((prefix) => pure.startsWith(prefix))
+    );
   };
 
-  // Show toast
-  const showToast = (message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info') => {
-    if (type === 'success') {
-      toast.success(message);
-    } else if (type === 'error') {
-      toast.error(message);
-    } else if (type === 'warning') {
-      toast(message, { icon: '⚠️' });
+  useEffect(() => {
+    if (validatePhone(phoneNumber)) {
+      const pure = getPurePhone(phoneNumber);
+      const user = getUserByPhoneNumber(pure);
+      setIsNewUser(!user);
     } else {
-      toast(message);
+      setIsNewUser(true);
     }
+  }, [phoneNumber]);
+
+  const handleOTPRequest = () => {
+    if (!validatePhone(phoneNumber)) return toast.error("Número inválido");
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setStep("otp_entry");
+      toast.success("Código enviado!");
+    }, 800);
   };
 
-  // Handle phone number input
-  const handlePhoneChange = (value: string) => {
-    // Format phone number with +258 prefix
-    let cleanValue = value.replace(/[^\d+]/g, '');
+  const handleFinalAuth = async () => {
+    setLoading(true);
+    const pure = getPurePhone(phoneNumber);
+    let targetUser: User | null = null;
 
-    // If user starts typing without +258, add it
-    if (!cleanValue.startsWith('+258') && cleanValue.length > 0) {
-      if (cleanValue.startsWith('8')) {
-        cleanValue = '+258' + cleanValue;
-      } else if (!cleanValue.startsWith('+')) {
-        cleanValue = '+258' + cleanValue;
+    if (step === "registration") {
+      if (password !== confirmPassword) {
+        setLoading(false);
+        return toast.error("As senhas não coincidem");
       }
-    }
-
-    setAuthState(prev => ({
-      ...prev,
-      phoneNumber: cleanValue,
-      errors: { ...prev.errors, phoneNumber: '' }
-    }));
-  };
-
-  // Handle login with OTP
-  const handleOTPLogin = async () => {
-    if (!validatePhoneNumber(authState.phoneNumber)) {
-      showToast('Número de telefone inválido. Use formato: +258 8xxxxxxx', 'error');
-      return;
-    }
-
-    setAuthState(prev => ({ ...prev, loading: true }));
-
-    try {
-      // Simulate OTP sending
-      setTimeout(() => {
-        setAuthState(prev => ({
-          ...prev,
-          showOTPField: true,
-          loading: false
-        }));
-        showToast('Código OTP enviado para seu telefone', 'success');
-      }, 1000);
-    } catch {
-      setAuthState(prev => ({ ...prev, loading: false }));
-      showToast('Erro ao enviar OTP', 'error');
-    }
-  };
-
-  // Handle login with password
-  const handlePasswordLogin = async () => {
-    if (!validatePhoneNumber(authState.phoneNumber)) {
-      showToast('Número de telefone inválido. Use formato: +258 8xxxxxxx', 'error');
-      return;
-    }
-
-    setAuthState(prev => ({ ...prev, showPasswordField: true }));
-  };
-
-  // Verify OTP
-  const handleOTPVerification = async () => {
-    if (authState.otp.length !== 6) {
-      showToast('Código OTP deve ter 6 dígitos', 'error');
-      return;
-    }
-
-    setAuthState(prev => ({ ...prev, loading: true }));
-
-    try {
-      // Simulate OTP verification - accept any 6-digit code
-      const isValidOTP = /^\d{6}$/.test(authState.otp);
-
-      if (isValidOTP) {
-        // Check if user exists in mock data
-        const cleanPhone = authState.phoneNumber.replace(/^\+258/, '');
-        const user = loginUser(cleanPhone, 'dummy'); // We don't need password for OTP
-
-        if (user) {
-          // User exists, redirect to dashboard
-          showToast(`Bem-vindo, ${user.role}!`, 'success');
-          setTimeout(() => {
-            const redirectUrl = DASHBOARD_URLS[user.role];
-            if (redirectUrl) {
-              router.push(redirectUrl);
-            } else {
-              router.push('/admin/dashboard');
-            }
-          }, 1500);
-        } else {
-          // User doesn't exist, start registration
-          setAuthState(prev => ({
-            ...prev,
-            isRegistering: true,
-            registrationStep: 1,
-            loading: false
-          }));
-        }
-      } else {
-        showToast('Código OTP inválido', 'error');
-        setAuthState(prev => ({ ...prev, loading: false }));
+      targetUser = {
+        numero: pure,
+        password: password,
+        role: "buyer",
+        name: `${registerData.name} ${registerData.lastName}`,
+      };
+    } else if (step === "password_entry") {
+      targetUser = loginUser(pure, password);
+    } else {
+      const existing = getUserByPhoneNumber(pure);
+      if (isNewUser) {
+        setLoading(false);
+        return setStep("registration");
       }
-    } catch {
-      showToast('Erro ao verificar OTP', 'error');
-      setAuthState(prev => ({ ...prev, loading: false }));
+      targetUser = existing;
+    }
+
+    if (targetUser) {
+      authLogin(targetUser);
+      router.push(
+        targetUser.role === "admin"
+          ? DASHBOARD_URLS.admin
+          : "/seller/dashboard",
+      );
+    } else {
+      toast.error("Erro na autenticação");
+      setLoading(false);
     }
   };
 
-  // Verify password
-  const handlePasswordVerification = async () => {
-    if (!authState.password) {
-      showToast('Digite sua senha', 'error');
-      return;
-    }
-
-    setAuthState(prev => ({ ...prev, loading: true }));
-
-    try {
-      // Use existing login function from lib/users.ts
-      const cleanPhone = authState.phoneNumber.replace(/^\+258/, '');
-      const user = loginUser(cleanPhone, authState.password);
-
-      if (user) {
-        // Salvar no AuthContext
-        authLogin(user);
-        showToast(`Bem-vindo, ${user.role}!`, 'success');
-        setTimeout(() => {
-          const redirectUrl = DASHBOARD_URLS[user.role];
-          if (redirectUrl) {
-            router.push(redirectUrl);
-          } else {
-            router.push('/admin/dashboard');
-          }
-        }, 1500);
-      } else {
-        // User doesn't exist, start registration
-        setAuthState(prev => ({
-          ...prev,
-          isRegistering: true,
-          registrationStep: 1,
-          loading: false
-        }));
-      }
-    } catch {
-      showToast('Erro ao verificar senha', 'error');
-      setAuthState(prev => ({ ...prev, loading: false }));
-    }
-  };
-
-  // Handle registration step 1
-  const handleRegistrationStep1 = () => {
-    const errors: Record<string, string> = {};
-
-    if (!authState.registrationData.fullName.trim()) {
-      errors.fullName = 'Nome completo é obrigatório';
-    }
-
-    if (!authState.registrationData.userType) {
-      errors.userType = 'Tipo de usuário é obrigatório';
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setAuthState(prev => ({ ...prev, errors }));
-      return;
-    }
-
-    setAuthState(prev => ({
-      ...prev,
-      registrationStep: 2,
-      errors: {}
-    }));
-  };
-
-  // Handle registration step 2
-  const handleRegistrationStep2 = () => {
-    const errors: Record<string, string> = {};
-
-    if (!authState.registrationData.province) {
-      errors.province = 'Província é obrigatória';
-    }
-
-    if (!authState.registrationData.district) {
-      errors.district = 'Distrito é obrigatório';
-    }
-
-    if (!authState.registrationData.addressDetails.trim()) {
-      errors.addressDetails = 'Endereço é obrigatório';
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setAuthState(prev => ({ ...prev, errors }));
-      return;
-    }
-
-    setAuthState(prev => ({
-      ...prev,
-      registrationStep: 3,
-      errors: {}
-    }));
-  };
-
-  // Handle registration step 3
-  const handleRegistrationStep3 = async () => {
-    const { password, confirmPassword } = authState.registrationData;
-    const errors: Record<string, string> = {};
-
-    // Only validate password if user wants to set one
-    if (authState.wantsPassword) {
-      if (!password) {
-        errors.password = 'Senha é obrigatória';
-      } else {
-        const passwordValidation = validatePassword(password);
-        if (!passwordValidation.isValid) {
-          errors.password = passwordValidation.message;
-        }
-
-        if (password !== confirmPassword) {
-          errors.confirmPassword = 'Senhas não coincidem';
-        }
-      }
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setAuthState(prev => ({ ...prev, errors }));
-      return;
-    }
-
-    setAuthState(prev => ({ ...prev, loading: true }));
-
-    try {
-      // Simulate user creation
-      showToast('Cadastro concluído com sucesso!', 'success');
-
-      setTimeout(() => {
-        // Redirect based on user type
-        const redirectUrl = DASHBOARD_URLS[authState.registrationData.userType as keyof typeof DASHBOARD_URLS];
-        if (redirectUrl) {
-          router.push(redirectUrl);
-        } else {
-          router.push('/buyer/dashboard');
-        }
-      }, 2000);
-    } catch {
-      showToast('Erro ao criar conta', 'error');
-      setAuthState(prev => ({ ...prev, loading: false }));
-    }
-  };
-
-  // Get districts for selected province
-  const getDistrictsForProvince = (provinceName: string) => {
-    const province = provincesData.find(p => p.name === provinceName);
-    return province ? province.districts.map(district => ({ value: district, label: district })) : [];
-  };
+  const RegistrationStepper = () => (
+    <div className="relative flex items-center justify-between mb-8 px-2 max-w-xs mx-auto">
+      <div className="absolute top-5 left-0 w-full h-[2px] bg-gray-100 -z-0" />
+      <motion.div 
+        className="absolute top-5 left-0 h-[2px] bg-green-500 -z-0"
+        initial={{ width: 0 }}
+        animate={{ width: `${(regStep - 1) * 50}%` }}
+      />
+      {[
+        { id: 1, label: "INFO" },
+        { id: 2, label: "LOCAL" },
+        { id: 3, label: "SENHA" },
+      ].map((s) => (
+        <div key={s.id} className="relative z-10 flex flex-col items-center gap-2">
+          <motion.div 
+            animate={{ 
+              scale: regStep === s.id ? 1.1 : 1,
+              backgroundColor: regStep >= s.id ? "#16a34a" : "#fff",
+              borderColor: regStep >= s.id ? "#16a34a" : "#e5e7eb"
+            }}
+            className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-bold shadow-sm"
+          >
+            {regStep > s.id ? (
+              <Check size={20} className="text-white" />
+            ) : (
+              <span className={regStep >= s.id ? "text-white" : "text-gray-400"}>
+                {s.id}
+              </span>
+            )}
+          </motion.div>
+          <span className={`text-[10px] font-bold tracking-widest ${regStep >= s.id ? "text-green-600" : "text-gray-300"}`}>
+            {s.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
-    <div className="h-screen flex overflow-hidden">
-      {/* Left side - Slider */}
-      {/* Left side - Slider: Usando o componente LoginSlider importado */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-teal-600">
+    <div className="h-screen w-full flex overflow-hidden bg-white sm:bg-gray-50">
+      {/* Esquerda: Slider (Desktop) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-teal-600 relative overflow-hidden">
         <LoginSlider slides={sliderData} />
       </div>
 
-      {/* Right side - Auth form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 lg:p-8 bg-gray-50 overflow-y-auto">
-        <div className="w-full max-w-md">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white rounded-lg shadow-lg p-8"
-          >
-            {/* Logo and title */}
-            <div className="text-center mb-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Image src="/favicon.ico" alt="Logo" width={40} height={40} />
-                <span className="text-sm font-medium text-gray-600">KUMELA</span>
+      {/* Direita: Auth Container */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center items-center relative h-full p-4 sm:p-6 overflow-hidden">
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md bg-white sm:rounded-3xl sm:shadow-2xl sm:border border-gray-100 p-6 sm:p-10 flex flex-col max-h-full overflow-hidden"
+        >
+          {/* Header */}
+          <div className="text-center mb-6 shrink-0">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="p-1.5 bg-green-50 rounded-lg">
+                <Image src="/favicon.ico" alt="Logo" width={32} height={32} />
               </div>
-              <h2 className="text-xl font-bold text-gray-800">
-                {authState.isRegistering ? 'Criar Conta' : 'ACESSE A SUA CONTA'}
-              </h2>
+              <span className="text-lg font-black text-slate-800 tracking-tighter uppercase">
+                KUMELA
+              </span>
             </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1e293b] tracking-tight">
+              {step === "registration" ? "Comece Agora" : "Seja Bem-vindo"}
+            </h2>
+            <p className="text-slate-400 text-xs sm:text-sm mt-1 font-medium">
+              {step === "registration"
+                ? "Crie sua conta em menos de 1 minuto."
+                : "Acesse o maior mercado agrícola de Moçambique."}
+            </p>
+          </div>
 
+          <div className="flex-1 overflow-y-auto px-1">
             <AnimatePresence mode="wait">
-              {/* Initial phone input */}
-              {!authState.showOTPField && !authState.showPasswordField && !authState.isRegistering && (
-                <motion.div
-                  key="phone"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-6"
-                >
-                  <Input
-                    type="tel"
-                    value={authState.phoneNumber}
-                    onChange={handlePhoneChange}
-                    placeholder="+258 8XXXXXXXX"
-                    label="Número de Telefone *"
-                    required
-                    icon={Phone}
-                    error={authState.errors.phoneNumber}
-                    maxLength={15}
-                  />
-
-                  <p className="text-xs text-gray-500 -mt-2">
-                    Digite os 9 dígitos do seu número (ex: 841234567)
-                  </p>
-
-                  <div className="space-y-4">
-                    <Button
-                      onClick={handleOTPLogin}
-                      loading={authState.loading}
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-                    >
+              {step === "initial" && (
+                <motion.div key="step1" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6 py-2">
+                  <Input type="tel" value={phoneNumber} onChange={setPhoneNumber} placeholder="Ex: 841234567" label="Número de Telefone" icon={Phone} className="h-14" />
+                  <div className="space-y-3">
+                    <Button onClick={handleOTPRequest} loading={loading} className="w-full cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-bold h-14 rounded-2xl shadow-lg">
                       Entrar com OTP
                     </Button>
-
-                    <Button
-                      onClick={handlePasswordLogin}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      Entrar com Senha
-                    </Button>
+                    {!isNewUser && validatePhone(phoneNumber) && (
+                      <Button onClick={() => setStep("password_entry")} className="w-full cursor-pointer border-2 border-slate-100 text-slate-700 font-bold h-14 rounded-2xl hover:bg-slate-50 transition-colors">
+                        Entrar com Senha
+                      </Button>
+                    )}
                   </div>
 
-                  <div className="space-y-3 text-center">
+                  {/* INFO APENAS NA PRIMEIRA TELA */}
+                  <div className="pt-4 border-t border-slate-50 space-y-4">
                     <button
-                      onClick={() => router.push('/')}
-                      className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1 mx-auto"
+                      onClick={() => router.push("/")}
+                      className="group w-full cursor-pointer flex items-center justify-center gap-2 py-1 text-sm font-semibold text-slate-400 hover:text-green-600 transition-all duration-300"
                     >
-                      ← Voltar à página inicial
+                      <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                      <span className="relative">
+                        Voltar ao início
+                        <span className="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-green-500 transition-all duration-300 group-hover:w-full" />
+                      </span>
                     </button>
 
-                    <p className="text-sm text-gray-600">
-                      Não possui conta?{' '}
-                      <button
-                        onClick={() => setAuthState(prev => ({ ...prev, isRegistering: true }))}
-                        className="text-blue-500 hover:underline font-medium"
-                      >
-                        Registre-se agora
-                      </button>
+                    <p className="text-slate-400 text-[10px] font-bold tracking-widest text-center">
+                      &copy; {new Date().getFullYear()} • Todos os direitos reservados
                     </p>
                   </div>
                 </motion.div>
               )}
 
-              {/* OTP input */}
-              {authState.showOTPField && !authState.isRegistering && (
-                <motion.div
-                  key="otp"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-6"
-                >
-                  <div className="text-center">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                      Código de Verificação
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Digite o código de 6 dígitos enviado para {authState.phoneNumber}
-                    </p>
-                  </div>
+              {step === "registration" && (
+                <motion.div key="reg" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6 py-2">
+                  <RegistrationStepper />
 
-                  <Input
-                    type="tel"
-                    value={authState.otp}
-                    onChange={(value) => setAuthState(prev => ({ ...prev, otp: value }))}
-                    placeholder="000000"
-                    label="Código OTP"
-                    required
-                    maxLength={6}
-                  />
-
-                  <div className="space-y-3">
-                    <Button
-                      onClick={handleOTPVerification}
-                      loading={authState.loading}
-                      className="w-full"
-                    >
-                      Verificar Código
-                    </Button>
-
-                    <Button
-                      onClick={() => setAuthState(prev => ({ ...prev, showOTPField: false, otp: '' }))}
-                      variant="ghost"
-                      className="w-full"
-                    >
-                      Voltar
-                    </Button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Password input */}
-              {authState.showPasswordField && !authState.isRegistering && (
-                <motion.div
-                  key="password"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-6"
-                >
-                  <div className="text-center">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                      Digite sua Senha
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      Para o número {authState.phoneNumber}
-                    </p>
-                  </div>
-
-                  <Input
-                    type={authState.showPassword ? 'text' : 'password'}
-                    value={authState.password}
-                    onChange={(value) => setAuthState(prev => ({ ...prev, password: value }))}
-                    placeholder="Digite sua senha"
-                    label="Senha"
-                    required
-                    icon={Lock}
-                  />
-
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="showPassword"
-                      checked={authState.showPassword}
-                      onChange={() => setAuthState(prev => ({ ...prev, showPassword: !prev.showPassword }))}
-                      className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="showPassword" className="ml-2 text-sm text-gray-700">
-                      Mostrar senha
-                    </label>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Button
-                      onClick={handlePasswordVerification}
-                      loading={authState.loading}
-                      className="w-full"
-                    >
-                      Entrar
-                    </Button>
-
-                    <Button
-                      onClick={() => setAuthState(prev => ({ ...prev, showPasswordField: false, password: '' }))}
-                      variant="ghost"
-                      className="w-full"
-                    >
-                      Voltar
-                    </Button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Registration steps */}
-              {authState.isRegistering && (
-                <motion.div
-                  key="registration"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-6"
-                >
-                  <StepIndicator
-                    currentStep={authState.registrationStep}
-                    totalSteps={3}
-                    stepLabels={registrationSteps}
-                  />
-
-                  {/* Step 1: Basic Info ----------------------------------------------aqui */}
-                  {authState.registrationStep === 1 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-4"
-                    >
-                      <h3 className="text-lg font-semibold text-gray-800 text-center">
-                        Informações Básicas
-                      </h3>
-
-                      <Input
-                        value={authState.registrationData.fullName}
-                        onChange={(value) => setAuthState(prev => ({
-                          ...prev,
-                          registrationData: { ...prev.registrationData, fullName: value },
-                          errors: { ...prev.errors, fullName: '' }
-                        }))}
-                        placeholder="Seu nome completo"
-                        label="Nome completo"
-                        required
-                        icon={User}
-                        error={authState.errors.fullName}
-                      />
-
-                      <Select
-                        value={authState.registrationData.userType}
-                        onChange={(value) => setAuthState(prev => ({
-                          ...prev,
-                          registrationData: { ...prev.registrationData, userType: value },
-                          errors: { ...prev.errors, userType: '' }
-                        }))}
-                        options={userTypes.map(type => ({
-                          value: type.value,
-                          label: type.label,
-                          icon: type.icon
-                        }))}
-                        placeholder="Selecione seu tipo"
-                        label="Tipo de usuário"
-                        required
-                        error={authState.errors.userType}
-                      />
-                      <div className="flex gap-3">
-                        <Button
-                          onClick={() =>
-                            setAuthState(prev => ({
-                              ...prev,
-                              isRegistering: false,         
-                              registrationStep: 1,       
-                              registrationData: {         
-                                fullName: '',
-                                userType: '',
-                                province: '',
-                                district: '',
-                                addressDetails: '',
-                                password: '',
-                                confirmPassword: '',
-                              },
-                              errors: {}
-                            }))
-                          }
-                          variant="ghost"
-                          className="flex-1"
-                        >
-                          Voltar
+                  {regStep === 1 && (
+                    <div className="space-y-4">
+                      <Input label="Nome" icon={UserIcon} value={registerData.name} onChange={(v) => setRegisterData({ ...registerData, name: v })} placeholder="João" className="h-14" />
+                      <Input label="Apelido" icon={UserIcon} value={registerData.lastName} onChange={(v) => setRegisterData({ ...registerData, lastName: v })} placeholder="Sitoe" className="h-14" />
+                      <div className="pt-2 space-y-3">
+                        <Button onClick={() => setRegStep(2)} disabled={!registerData.name || !registerData.lastName} className="w-full bg-green-600 text-white font-bold h-14 rounded-2xl shadow-lg">
+                          Continuar <ChevronRight size={18} className="ml-1" />
                         </Button>
-
-                        <Button
-                          onClick={handleRegistrationStep1}
-                          className="flex-1"
-                        >
-                          Próximo
-                        </Button>
+                        <button onClick={() => setStep("initial")} className="w-full flex items-center justify-center gap-2 text-xs text-slate-400 font-medium py-2">
+                          <RefreshCw size={14} /> Corrigir telefone
+                        </button>
                       </div>
-                    </motion.div>
+                    </div>
                   )}
 
-                  {/* Step 2: Location */}
-                  {authState.registrationStep === 2 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-4"
-                    >
-                      <h3 className="text-lg font-semibold text-gray-800 text-center">
-                        Localização
-                      </h3>
-
-                      <Select
-                        value={authState.registrationData.province}
-                        onChange={(value) => setAuthState(prev => ({
-                          ...prev,
-                          registrationData: {
-                            ...prev.registrationData,
-                            province: value,
-                            district: '' // Reset district when province changes
-                          },
-                          errors: { ...prev.errors, province: '', district: '' }
-                        }))}
-                        options={provincesData.map(province => ({
-                          value: province.name,
-                          label: province.name
-                        }))}
-                        placeholder="Selecione a província"
-                        label="Província"
-                        required
-                        error={authState.errors.province}
-                      />
-
-                      <Select
-                        value={authState.registrationData.district}
-                        onChange={(value) => setAuthState(prev => ({
-                          ...prev,
-                          registrationData: { ...prev.registrationData, district: value },
-                          errors: { ...prev.errors, district: '' }
-                        }))}
-                        options={getDistrictsForProvince(authState.registrationData.province)}
-                        placeholder="Selecione o distrito"
-                        label="Distrito"
-                        required
-                        disabled={!authState.registrationData.province}
-                        error={authState.errors.district}
-                      />
-
-                      <Input
-                        value={authState.registrationData.addressDetails}
-                        onChange={(value) => setAuthState(prev => ({
-                          ...prev,
-                          registrationData: { ...prev.registrationData, addressDetails: value },
-                          errors: { ...prev.errors, addressDetails: '' }
-                        }))}
-                        placeholder="Rua, número, bairro"
-                        label="Endereço"
-                        required
-                        icon={MapPin}
-                        error={authState.errors.addressDetails}
-                      />
-
-                      <div className="flex gap-3">
-                        <Button
-                          onClick={() => setAuthState(prev => ({ ...prev, registrationStep: 1 }))}
-                          variant="ghost"
-                          className="flex-1"
-                        >
-                          Voltar
-                        </Button>
-                        <Button
-                          onClick={handleRegistrationStep2}
-                          className="flex-1"
-                        >
-                          Próximo
-                        </Button>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Step 3: Password */}
-                  {authState.registrationStep === 3 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="space-y-4"
-                    >
-                      <h3 className="text-lg font-semibold text-gray-800 text-center">
-                        Definir Senha
-                      </h3>
-
-                      <div className="text-center mb-6">
-                        <p className="text-lg font-medium text-gray-800 mb-2">
-                          Deseja definir uma senha agora? (Opcional)
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Você pode pular esta etapa e definir depois
-                        </p>
-                      </div>
-
-                      {/* SIM/NÃO Buttons */}
-                      <div className="flex gap-4 mb-6">
-                        <Button
-                          onClick={() => setAuthState(prev => ({ ...prev, wantsPassword: true }))}
-                          className={`flex-1 ${authState.wantsPassword ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700'}`}
-                        >
-                          SIM
-                        </Button>
-
-                      </div>
-
-                      {/* Password fields - only show if user wants password */}
-                      {authState.wantsPassword && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="space-y-4"
-                        >
-                          <Input
-                            type={authState.showPassword ? 'text' : 'password'}
-                            value={authState.registrationData.password}
-                            onChange={(value) => setAuthState(prev => ({
-                              ...prev,
-                              registrationData: { ...prev.registrationData, password: value },
-                              errors: { ...prev.errors, password: '' }
-                            }))}
-                            placeholder="Digite uma senha forte"
-                            label="Senha"
-                            icon={Lock}
-                            error={authState.errors.password}
-                          />
-
-                          <Input
-                            type={authState.showPassword ? 'text' : 'password'}
-                            value={authState.registrationData.confirmPassword}
-                            onChange={(value) => setAuthState(prev => ({
-                              ...prev,
-                              registrationData: { ...prev.registrationData, confirmPassword: value },
-                              errors: { ...prev.errors, confirmPassword: '' }
-                            }))}
-                            placeholder="Confirme sua senha"
-                            label="Confirmar senha"
-                            icon={Lock}
-                            error={authState.errors.confirmPassword}
-                          />
-
-                          <div className="flex items-center">
-                            <input
-                              type="checkbox"
-                              id="showRegPassword"
-                              checked={authState.showPassword}
-                              onChange={() => setAuthState(prev => ({ ...prev, showPassword: !prev.showPassword }))}
-                              className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor="showRegPassword" className="ml-2 text-sm text-gray-700">
-                              Mostrar senha
-                            </label>
+                  {regStep === 2 && (
+                    <div className="space-y-4">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Província (Fixo)</label>
+                        <div className="relative">
+                          <div className="w-full h-14 flex items-center pl-12 pr-4 border-2 border-gray-50 rounded-2xl bg-gray-50 text-slate-500 font-bold">
+                            Nampula
                           </div>
-                        </motion.div>
-                      )}
-
-                      <div className="flex gap-3">
-                        <Button
-                          onClick={() => setAuthState(prev => ({ ...prev, registrationStep: 2 }))}
-                          variant="ghost"
-                          className="flex-1"
+                          <MapPin size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-700 uppercase ml-1">Distrito</label>
+                        <select 
+                          value={registerData.district} 
+                          onChange={(e) => setRegisterData({...registerData, district: e.target.value})}
+                          className="w-full h-14 px-4 border-2 border-slate-100 rounded-2xl font-semibold focus:border-green-600 outline-none"
                         >
+                          <option value="">Selecione o distrito</option>
+                          {districts.map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                      </div>
+                      <Input label="Endereço Específico" icon={MapPin} value={registerData.address} onChange={(v) => setRegisterData({...registerData, address: v})} placeholder="Rua, número, bairro" className="h-14" />
+                      
+                      <div className="flex gap-3 pt-4">
+                        <button onClick={() => setRegStep(1)} className="flex-1 h-14 rounded-2xl border-2 border-slate-100 font-bold text-slate-500 hover:bg-slate-50 transition-colors">
                           Voltar
-                        </Button>
-                        <Button
-                          onClick={handleRegistrationStep3}
-                          loading={authState.loading}
-                          className="flex-1"
-                        >
-                          Pular
+                        </button>
+                        <Button onClick={() => setRegStep(3)} disabled={!registerData.district || !registerData.address} className="flex-[2] bg-green-600 text-white font-bold h-14 rounded-2xl shadow-lg">
+                          Próximo
                         </Button>
                       </div>
-                    </motion.div>
+                    </div>
+                  )}
+
+                  {regStep === 3 && (
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <Input type={showPassword ? "text" : "password"} label="Senha" icon={Lock} value={password} onChange={setPassword} className="h-14" />
+                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-11 text-slate-400">
+                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
+                      <Input type={showPassword ? "text" : "password"} label="Confirmar Senha" icon={Lock} value={confirmPassword} onChange={setConfirmPassword} className="h-14" />
+                      
+                      <div className="flex gap-3 pt-4">
+                        <button onClick={() => setRegStep(2)} className="flex-1 h-14 rounded-2xl border-2 border-slate-100 font-bold text-slate-500">
+                          Voltar
+                        </button>
+                        <Button onClick={handleFinalAuth} loading={loading} disabled={!password || password !== confirmPassword} className="flex-[2] bg-green-600 text-white font-bold h-14 rounded-2xl shadow-lg">
+                          Finalizar e Entrar
+                        </Button>
+                      </div>
+                    </div>
                   )}
                 </motion.div>
               )}
 
-            </AnimatePresence>
+              {step === "otp_entry" && (
+                <motion.div key="otp" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8 text-center py-4">
+                  <div className="bg-orange-50 p-3 rounded-xl inline-block">
+                    <p className="text-xs text-orange-700 font-bold">Código enviado para +258 {phoneNumber}</p>
+                  </div>
+                  <OTPInput length={6} value={otp} onChange={setOtp} />
+                  <div className="space-y-3">
+                    <Button onClick={handleFinalAuth} loading={loading} className="w-full h-14 bg-orange-500 text-white font-bold rounded-2xl shadow-lg">Verificar e Entrar</Button>
+                    <button onClick={() => setStep("initial")} className="text-sm text-slate-400 font-bold hover:underline">Corrigir número</button>
+                  </div>
+                </motion.div>
+              )}
 
-          </motion.div>
-        </div>
+              {step === "password_entry" && (
+                <motion.div key="pass" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6 py-2">
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} value={password} onChange={setPassword} label="Sua Senha" icon={Lock} className="h-14" autoFocus />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-11 text-slate-400">
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  <Button onClick={handleFinalAuth} loading={loading} className="w-full h-14 bg-green-600 text-white font-bold rounded-2xl shadow-lg">Acessar Conta</Button>
+                  <button onClick={() => setStep("initial")} className="w-full text-center text-sm font-bold text-slate-400">Esqueci minha senha</button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -34,11 +34,11 @@ export default function TermsOfUsePage() {
               <h1 className="text-4xl font-bold text-gray-800">Termos de Uso</h1>
             </div>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Bem-vindo à **KUMELA**. Estes termos regem o uso da nossa plataforma de agricultura em Moçambique.
+              Bem-vindo à <strong>KUMELA</strong>. Estes termos regem o uso da nossa plataforma de agricultura em Moçambique.
             </p>
             <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-500">
               <Calendar className="h-4 w-4" />
-              <span>Última atualização: Janeiro 2025</span>
+              <span>Última atualização: Janeiro 2026</span>
             </div>
           </motion.div>
 
@@ -57,7 +57,7 @@ export default function TermsOfUsePage() {
               </div>
               <div className="pl-9 space-y-4 text-gray-700">
                 <p>
-                  Ao acessar e usar a plataforma **KUMELA**, você concorda em cumprir e estar vinculado a estes Termos de Uso. 
+                  Ao acessar e usar a plataforma <strong>KUMELA</strong>, você concorda em cumprir e estar vinculado a estes Termos de Uso. 
                   Se você não concordar com qualquer parte destes termos, não deve usar nossa plataforma.
                 </p>
                 <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
@@ -80,7 +80,7 @@ export default function TermsOfUsePage() {
               </div>
               <div className="pl-9 space-y-4 text-gray-700">
                 <p>
-                  A **KUMELA** é uma plataforma digital que conecta agricultores, vendedores, transportadores e consumidores 
+                  A <strong>KUMELA</strong> é uma plataforma digital que conecta agricultores, vendedores, transportadores e consumidores 
                   em Moçambique, facilitando a comercialização de produtos agrícolas.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
@@ -168,7 +168,7 @@ export default function TermsOfUsePage() {
               </div>
               <div className="pl-9 space-y-4 text-gray-700">
                 <p>
-                  A **KUMELA** facilita transações entre usuários, mas não é responsável por disputas entre compradores e vendedores.
+                  A <strong>KUMELA</strong> facilita transações entre usuários, mas não é responsável por disputas entre compradores e vendedores.
                 </p>
                 <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
                   <div className="flex items-start gap-3">
@@ -194,7 +194,7 @@ export default function TermsOfUsePage() {
               </div>
               <div className="pl-9 space-y-4 text-gray-700">
                 <p>
-                  A **KUMELA** não se responsabiliza por danos diretos, indiretos, incidentais ou consequenciais 
+                  A <strong>KUMELA</strong> não se responsabiliza por danos diretos, indiretos, incidentais ou consequenciais 
                   resultantes do uso da plataforma.
                 </p>
                 <p>
@@ -241,7 +241,7 @@ export default function TermsOfUsePage() {
             <div className="border-t pt-6 mt-8">
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <p className="text-sm text-gray-500">
-                  © 2025 **KUMELA**. Todos os direitos reservados.
+                  © 2025 KUMELA. Todos os direitos reservados.
                 </p>
                 <div className="flex gap-4">
                   <Link

@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="flex items-center justify-center gap-2 mt-4 text-sm text-gray-500">
               <Calendar className="h-4 w-4" />
-              <span>Última atualização: Janeiro 2025</span>
+              <span>Última atualização: Janeiro 2026</span>
             </div>
           </motion.div>
 
@@ -60,7 +60,7 @@ export default function PrivacyPolicyPage() {
               </div>
               <div className="pl-9 space-y-4 text-gray-700">
                 <p>
-                  A **KUMELA** está comprometida em proteger sua privacidade e dados pessoais. Esta política explica 
+                  A <strong>KUMELA</strong> está comprometida em proteger sua privacidade e dados pessoais. Esta política explica 
                   como coletamos, usamos, armazenamos e protegemos suas informações quando você usa nossa plataforma.
                 </p>
                 <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
@@ -350,7 +350,7 @@ export default function PrivacyPolicyPage() {
             <div className="border-t pt-6 mt-8">
               <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <p className="text-sm text-gray-500">
-                  © 2025 **KUMELA**. Todos os direitos reservados.
+                  © 2025 <strong>KUMELA</strong>. Todos os direitos reservados.
                 </p>
                 <div className="flex gap-4">
                   <Link

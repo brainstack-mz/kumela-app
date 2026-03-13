@@ -2,9 +2,8 @@
 "use client";
 import AnnounceModal from "@/components/modals/AnnounceModal";
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, ExternalLink, Megaphone, ShoppingBag } from "lucide-react";
+import { Megaphone, ShoppingBag } from "lucide-react";
 
 // Paleta de cores otimizada
 const colors = {
@@ -24,7 +23,7 @@ const slides = [
     title: "Venda Mais e Melhor Com a MOZAGRO!",
     description:
       "A MOZAGRO é a sua loja online. Ligue-se a quem quer comprar e garanta que os seus produtos frescos chegam a mais pessoas.",
-    image: "/assets/img1.jpeg",
+    image: "/assets/img2.jpeg",
   },
   {
     subtitle: "Conecte-se a mais pessoas",
@@ -203,7 +202,7 @@ const Hero = () => {
                          shadow-lg transition-all duration-300 transform
                          hover:bg-[#0D47A1] hover:shadow-xl hover:scale-[1.03]
                          focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-75
-                         max-w-xs sm:w-auto mx-auto md:mx-0"
+                         max-w-xs sm:w-auto mx-auto md:mx-0 cursor-pointer"
             >
               <ShoppingBag size={20} />
               Explorar Produtos
@@ -218,7 +217,7 @@ const Hero = () => {
                    shadow-lg transition-all duration-300 transform
                    hover:bg-orange-600 hover:shadow-xl hover:scale-[1.03]
                    focus:outline-none focus:ring-4 focus:ring-orange-400 focus:ring-opacity-75
-                   max-w-xs sm:w-auto mx-auto md:mx-0"
+                   max-w-xs sm:w-auto mx-auto md:mx-0 cursor-pointer"
       >
         <Megaphone size={20} />
         Anuncie Agora

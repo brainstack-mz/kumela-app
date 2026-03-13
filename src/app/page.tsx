@@ -6,7 +6,7 @@ import Produts from "@/components/shared/Products";
 import ContactsPage from "@/components/shared/contact";
 import Faq from "@/components/shared/Faq";
 import ScrollControls from "@/components/shared/ScrollControls";
-import Video from "@/components/shared/Viedeo";
+import Video from "@/components/shared/Video";
 
 export default function HomePage() {
   return (
