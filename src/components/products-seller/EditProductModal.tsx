@@ -370,4 +370,3 @@ export default function EditProductModal({ isOpen, onClose, product, onSuccess }
     </AnimatePresence>
   );
 }
-

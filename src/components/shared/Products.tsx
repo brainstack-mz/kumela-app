@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation"; 
-import ProductCard from "../products-seller/ProductCard";
 import { useSearch } from "@/context/SearchContext";
 import { productsData } from "@/data/products"; // IMPORTANTE: Importando do local central
+import ProductCard from "@/components/products-seller/ProductCard";
 
 const categories = [
   "Todos", "Frutas", "Legumes", "Verduras", "Raízes", "Laticínios", "Cereais",
@@ -29,17 +29,15 @@ export default function Products() {
     router.push(`/produtos/${productId}`);
   };
 
-  const handleAddToCart = (productId: number) => {
-    alert("Produto adicionado ao carrinho!");
-  };
+  
 
   const handleSeeMore = () => {
     setVisibleProducts((prev) => prev + 6);
   };
 
   return (
-    <section id="products" className="relative w-full py-12 bg-white font-sans">
-      <div className="container mx-auto px-4 md:px-8">
+    <section id="products" className="relative w-full py-1 bg-white font-sans">
+      <div className="container mx-auto px-2 md:px-8">
         <p className="text-xl sm:text-2xl font-extrabold text-[#2E7D32] text-center mb-8 md:mb-12">
           Faça sua compra com um simples clique
         </p>
@@ -53,7 +51,7 @@ export default function Products() {
               <button
                 key={index}
                 onClick={() => setSelectedCategory(cat)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full transition-colors duration-300 font-semibold text-sm sm:text-base ${
+                className={`cursor-pointer flex-shrink-0 px-4 py-2 rounded-full transition-colors duration-300 font-semibold text-sm sm:text-base ${
                   selectedCategory === cat
                     ? "bg-[#4CAF50] text-white"
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -73,8 +71,7 @@ export default function Products() {
                 key={product.id}
                 product={product}
                 onPreview={() => handlePreview(product.id)}
-                onAddToCart={handleAddToCart}
-              />
+               />
             ))}
         </div>
 
@@ -82,7 +79,7 @@ export default function Products() {
           <div className="flex justify-center mt-12">
             <button
               onClick={handleSeeMore}
-              className="px-8 py-3 rounded-full bg-[#E8F5E9] text-[#2E7D32] font-semibold hover:bg-[#C8E6C9] transition-colors"
+              className="px-8 py-3 cursor-pointer rounded-full bg-[#E8F5E9] text-[#2E7D32] font-semibold hover:bg-[#C8E6C9] transition-colors"
             >
               Ver Mais Produtos
             </button>

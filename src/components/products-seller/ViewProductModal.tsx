@@ -128,4 +128,3 @@ export default function ViewProductModal({ isOpen, onClose, product }: ViewProdu
     </AnimatePresence>
   );
 }
-

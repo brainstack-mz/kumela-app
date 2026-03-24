@@ -16,7 +16,7 @@ export default function HomePage() {
 
       {/* Conteúdo principal da página */}
       <div className="relative"> 
-     <section className="w-full mt-[1px]  md:mt-0">
+     <section className="w-full mt-[4px]  md:mt-6">
   <Hero />
 </section>
 

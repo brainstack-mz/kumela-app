@@ -1,6 +1,6 @@
 // Dados mockados para admin baseados em USERS
 import { USERS } from "@/lib/users";
-import { mockProducts, mockSales, mockOrders, mockDeliveries } from "./dashboardData";
+import { mockProducts, mockSales, mockDeliveries } from "./dashboardData";
 
 // Calcular estatísticas reais baseadas nos dados
 export const getAdminStats = () => {

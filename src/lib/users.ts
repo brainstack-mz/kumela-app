@@ -1,5 +1,5 @@
-// src/lib/users.js
- 
+// src/lib/users.ts
+
 export interface User {
   numero: string;
   password: string;
@@ -9,8 +9,22 @@ export interface User {
   district?: string;
 }
 
-// Mapeamento de papéis para URLs de redirecionamento
-// Isso torna o redirecionamento centralizado e fácil de manter.
+// Interface global para o formulário SmartForm
+export interface SmartFormData {
+  name: string;
+  phone: string;
+  isRegistered: boolean;
+  district: string;
+  locality: string;
+  category: string;
+  stock: string;
+  price: string;
+  unit: string;
+  images: string[];
+  description: string;
+  quantity: string; // Adicionado para resolver erro da imagem 97df22
+}
+
 export const DASHBOARD_URLS = {
   admin: "/admin/dashboard",
   buyer: "/seller/dashboard",
@@ -18,29 +32,19 @@ export const DASHBOARD_URLS = {
   shipper: "/seller/dashboard",
 };
 
- 
 export const USERS: User[] = [
   { numero: "841234567", password: "123456", role: "admin", name: "Admin User", province: "Nampula", district: "Nampula Cidade" },
   { numero: "842934326", password: "1234", role: "buyer", name: "João Cliente", province: "Nampula", district: "Nampula Cidade" },
   { numero: "861998877", password: "vendo123", role: "seller", name: "Maria Vendedora", province: "Nampula", district: "Monapo" },
   { numero: "851112233", password: "transportador123", role: "shipper", name: "Carlos Transportador", province: "Nampula", district: "Mossuril" },
-  { numero: "841112233", password: "123456", role: "buyer", name: "Ana Compradora", province: "Nampula", district: "Angoche" },
-  { numero: "842223344", password: "123456", role: "buyer", name: "Pedro Cliente", province: "Nampula", district: "Moma" },
-  { numero: "843334455", password: "123456", role: "seller", name: "Sofia Vendedora", province: "Nampula", district: "Mecuburi" },
-  { numero: "870570364", password: "123456", role: "buyer", name: "Shelcia Victor", province: "Nampula", district: "Meconta" },    
-  { numero: "851112233", password: "transportador123", role: "shipper", name: "Carlos Transportador", province: "Nampula", district: "Mossuril" },
-
+  { numero: "870570364", password: "123456", role: "buyer", name: "Lutyrano Etrice", province: "Nampula", district: "Meconta" },    
 ];
 
-// Função para obter usuário por número
 export const getUserByPhoneNumber = (phone: string): User | null => {
   const cleanPhone = phone.replace(/^\+258/, '').replace(/\D/g, '');
   return USERS.find(u => u.numero === cleanPhone) || null;
 };
 
 export const loginUser = (numero: string, password: string): User | null => {
-  const user = USERS.find(
-    (u) => u.numero === numero && u.password === password
-  );
-  return user || null;
+  return USERS.find((u) => u.numero === numero && u.password === password) || null;
 };

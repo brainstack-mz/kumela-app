@@ -467,4 +467,3 @@ export default function NewProductModal({ isOpen, onClose, onSuccess }: NewProdu
     </AnimatePresence>
   );
 }
-

@@ -1,13 +1,15 @@
-//src/components/admin-components/Sidebar.tsx
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Home, Users, BarChartBig, ShoppingBag, Leaf, BookOpen, Truck, LogOut, Package, CheckCircle, Clock, DollarSign } from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { 
+  Home, Users, BarChartBig, ShoppingBag, BookOpen, 
+  LogOut, Package, DollarSign, LayoutDashboard, 
+  Truck, Settings, User as UserIcon
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { motion } from "framer-motion";
-import { USERS } from "@/lib/users"; 
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -17,120 +19,153 @@ interface SidebarProps {
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-const getNavItems = (role: string) => {
-  const adminItems = [
-    { name: "Início", href: "/admin/dashboard", icon: Home },
-    { name: "Gestão de Produtos", href: "/admin/dashboard/products", icon: Package },
-    { name: "Gestão de Usuários", href: "/admin/dashboard/users", icon: Users },
-    { name: "Transações", href: "/admin/dashboard/transactions", icon: DollarSign },
-    { name: "Tabela de Preços", href: "/admin/dashboard/price-table", icon: BookOpen },
-    { name: "Relatórios", href: "/admin/dashboard/report", icon: BarChartBig },
-  ];
-  return role === "admin" ? adminItems : [];
-};
+  const getNavItems = (role: string) => {
+    const baseMenu = role === "admin" ? [
+      { name: "Painel Admin", href: "/admin/dashboard", icon: LayoutDashboard },
+      { name: "Produtos", href: "/admin/dashboard/products", icon: Package },
+      { name: "Usuários", href: "/admin/dashboard/users", icon: Users },
+      { name: "Transações", href: "/admin/dashboard/transactions", icon: DollarSign },
+      { name: "Preços Mercado", href: "/admin/dashboard/price-table", icon: BookOpen },
+      { name: "Relatórios", href: "/admin/dashboard/report", icon: BarChartBig },
+    ] : [
+      { name: "Início", href: "/seller/dashboard", icon: Home },
+      { name: "Comprar", href: "/seller/marketplace", icon: ShoppingBag },
+      { name: "Meus Produtos", href: "/seller/products", icon: Package },
+      { name: "Minhas Vendas", href: "/seller/sales", icon: DollarSign },
+      { name: "Entregas", href: "/seller/shipping", icon: Truck },
+      { name: "Perfil", href: "/seller/dashboard/profile", icon: UserIcon },
+    ];
 
-if (!user || user.role !== "admin") {
-  return null;
-}
-
-
-  const navItems = user ? getNavItems(user.role) : [];
-  
-  const isLinkActive = (href: string) => {
-    if (href === "/admin/dashboard") {
-      return pathname === href;
-    }
-    return pathname.startsWith(href);
+    // Adiciona Settings para todos
+    return [...baseMenu, { name: "Configurações", href: `/${role === 'admin' ? 'admin' : 'seller'}/settings`, icon: Settings }];
   };
 
-  const userNumero = user?.numero || 'Usuário';
+  const navItems = user ? getNavItems(user.role) : [];
 
-  if (!user || user.role !== "admin") {
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <>
-      {isOpen && (
-        <div 
-          onClick={onToggle} 
-          className="md:hidden fixed inset-0 bg-gray-900 bg-opacity-50 z-35 transition-opacity duration-300"
-          style={{ top: '64px' }}
-        ></div>
-      )}
+      {/* Overlay Mobile */}
+      <AnimatePresence>
+        {isOpen && isMobile && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={onToggle} 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 mt-16 cursor-pointer"
+          />
+        )}
+      </AnimatePresence>
 
-      <aside className={`fixed top-16 left-0 h-[calc(100vh-64px)] bg-white dark:bg-gray-800 shadow-2xl z-30 transition-all duration-300
+      <aside 
+        className={`fixed top-16 left-0 h-[calc(100vh-64px)] bg-white dark:bg-gray-950 border-r border-gray-200 dark:border-gray-800 shadow-2xl z-50 transition-all duration-300 ease-in-out overflow-hidden
           ${isOpen ? "w-64" : "w-20"}
-          ${!isOpen ? "-translate-x-full md:translate-x-0" : "translate-x-0"}
+          ${!isOpen && isMobile ? "-translate-x-full" : "translate-x-0"}
         `}
       >
-        <div className="flex flex-col h-full">
-          <nav className="p-4 flex-1 pt-4">
-            <ul className="space-y-2 font-medium">
-              {navItems.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    onClick={isMobile ? onToggle : undefined}
-                    className={`group relative flex items-center p-3 rounded-lg transition-all duration-200 ${
-                      isLinkActive(item.href)
-                        ? "bg-green-600 text-white shadow-lg"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <item.icon size={20} className="mr-3 flex-shrink-0" />
-                    <span className={`transition-opacity duration-300 whitespace-nowrap overflow-hidden ${isOpen ? "opacity-100" : "opacity-0"}`}>
+        <div className="flex flex-col h-full overflow-hidden">
+          {/* Navegação Principal - Sem scroll horizontal */}
+          <nav className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-1 custom-scrollbar">
+            {navItems.map((item) => {
+              const active = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={isMobile ? onToggle : undefined}
+                  className={`flex items-center p-3 rounded-xl transition-all duration-200 cursor-pointer group relative ${
+                    active 
+                      ? "bg-green-600 text-white shadow-md" 
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                  }`}
+                >
+                  <item.icon size={22} className="flex-shrink-0" />
+                  <span className={`ml-3 text-sm font-bold transition-all duration-300 whitespace-nowrap ${isOpen ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none lg:hidden"}`}>
+                    {item.name}
+                  </span>
+                  
+                  {/* Tooltip quando fechada */}
+                  {!isOpen && !isMobile && (
+                    <div className="absolute left-full ml-4 px-3 py-1.5 bg-gray-900 text-white text-[11px] font-bold rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-xl z-[60] whitespace-nowrap">
                       {item.name}
-                    </span>
-                    {!isOpen && (
-                      <span className="absolute left-full ml-4 whitespace-nowrap rounded bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        {item.name}
-                      </span>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
           </nav>
 
-          {user && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className={`p-4 mt-auto border-t border-gray-300 dark:border-gray-700 transition-all duration-300 ${isOpen ? "w-full" : "w-16 flex justify-center"}`}
+          {/* Rodapé: Sair e Perfil */}
+          <div className="p-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-900/20">
+            
+            {/* Botão Sair - Estilo Refinado */}
+            <button
+              onClick={() => setShowLogoutConfirm(true)}
+              className="w-full flex items-center p-3 mb-2 rounded-xl text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all group relative"
             >
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-lg">
-                  {userNumero.charAt(0).toUpperCase()}
+              <LogOut size={22} className="flex-shrink-0" />
+              <span className={`ml-3 text-sm font-bold transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 lg:hidden"}`}>
+                Sair da Conta
+              </span>
+              {!isOpen && !isMobile && (
+                <div className="absolute left-full ml-4 px-3 py-1.5 bg-red-600 text-white text-[11px] font-bold rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-xl whitespace-nowrap">
+                  Sair
                 </div>
-                {isOpen && (
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-gray-800 dark:text-white whitespace-nowrap">{userNumero}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{user.role}</p>
-                  </div>
-                )}
-                {isOpen && (
-                  <button onClick={logout} className="text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors">
-                    <LogOut size={20} />
-                  </button>
-                )}
+              )}
+            </button>
+
+            {/* Perfil Miniatura */}
+            <div className={`flex items-center gap-3 p-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 ${!isOpen ? "justify-center" : ""}`}>
+              <div className="w-9 h-9 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0 shadow-sm">
+                {user.name?.charAt(0) || user.numero?.charAt(0)}
               </div>
-            </motion.div>
-          )}
+              {isOpen && (
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold truncate text-gray-900 dark:text-white leading-tight">
+                    {user.name || "Usuário"}
+                  </p>
+                  <p className="text-[10px] uppercase text-green-600 font-extrabold tracking-tighter">
+                    {user.role}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </aside>
+
+      {/* Modal de Confirmação (Interativo) */}
+      <AnimatePresence>
+        {showLogoutConfirm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowLogoutConfirm(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-xs relative z-10 shadow-2xl text-center border dark:border-gray-800"
+            >
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <LogOut size={24} />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Deseja sair?</h3>
+              <div className="flex gap-2 mt-6">
+                <button onClick={() => setShowLogoutConfirm(false)} className="flex-1 py-2.5 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors">Voltar</button>
+                <button onClick={() => { logout(); router.push("/public/login"); }} className="flex-1 py-2.5 rounded-xl font-bold bg-red-600 text-white hover:bg-red-700 cursor-pointer shadow-lg shadow-red-600/20 transition-all">Sair</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

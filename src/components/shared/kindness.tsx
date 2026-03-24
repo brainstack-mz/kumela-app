@@ -12,8 +12,7 @@ import {
   CheckCircle,
   MapPin,
   Clock,
-  User,
-  ArrowRight
+  User
 } from "lucide-react";
 import Image from "next/image";
 
