@@ -149,7 +149,7 @@ export default function AuthPage() {
       router.push(
         targetUser.role === "admin"
           ? DASHBOARD_URLS.admin
-          : "/seller/dashboard",
+          : "/user/dashboard",
       );
     } else {
       toast.error("Erro na autenticação");

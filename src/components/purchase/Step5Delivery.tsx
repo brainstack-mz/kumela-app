@@ -52,7 +52,7 @@ export default function Step7Delivery({ order, onBack }: Step7Props) {
 
     const tableData = [
       ["Produto", order.product.name],
-      ["Vendedor", order.product.seller],
+      ["Vendedor", order.product.user],
       ["Preço Unitário", `MZN ${order.purchaseData.subtotal / order.purchaseData.quantity}`],
       ["Quantidade", `${order.purchaseData.quantity} ${order.product.unit}`],
       ["Subtotal", `MZN ${order.purchaseData.subtotal.toFixed(2)}`],

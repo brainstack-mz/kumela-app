@@ -94,7 +94,7 @@ export default function Step5Review({
                 {product.description}
               </p>
               <p className="text-[11px] text-green-600 font-bold mt-1">
-                Vendido por: {product.seller}
+                Vendido por: {product.user}
               </p>
             </div>
           </div>

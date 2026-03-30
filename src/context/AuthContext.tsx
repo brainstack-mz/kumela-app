@@ -9,7 +9,7 @@ import Image from 'next/image';
 export interface User {
   numero: string;
   password?: string;
-  role: "admin" | "buyer" | "seller" | "shipper";
+  role: "admin" | "buyer" | "user" | "shipper";
   name?: string;
   province?: string;
   district?: string;

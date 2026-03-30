@@ -5,7 +5,7 @@ import { mockProducts, mockSales, mockDeliveries } from "./dashboardData";
 // Calcular estatísticas reais baseadas nos dados
 export const getAdminStats = () => {
   const totalUsers = USERS.length;
-  const activeSellers = USERS.filter(u => u.role === "seller").length;
+  const activeusers = USERS.filter(u => u.role === "user").length;
   const activeShippers = USERS.filter(u => u.role === "shipper").length;
   const activeBuyers = USERS.filter(u => u.role === "buyer").length;
   
@@ -20,7 +20,7 @@ export const getAdminStats = () => {
 
   return {
     totalUsers,
-    activeSellers,
+    activeusers,
     activeShippers,
     activeBuyers,
     transactions,
@@ -30,7 +30,7 @@ export const getAdminStats = () => {
 };
 
 // Obter todos os usuários por role
-export const getUsersByRole = (role: "admin" | "buyer" | "seller" | "shipper") => {
+export const getUsersByRole = (role: "admin" | "buyer" | "user" | "shipper") => {
   return USERS.filter(u => u.role === role);
 };
 

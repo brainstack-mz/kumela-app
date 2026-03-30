@@ -8,7 +8,7 @@ interface CartItem {
   price: number;
   quantity: number;
   image: string;
-  seller: string;
+  user: string;
 }
 
 // Interface para o produto que vem da lista (com desconto opcional)
@@ -18,7 +18,7 @@ interface ProductInput {
   price: number;
   image: string;
   discount?: number;
-  seller?: string;
+  user?: string;
 }
 
 interface CartContextType {
@@ -73,7 +73,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         name: product.name, 
         price: priceToCharge, 
         image: product.image, 
-        seller: product.seller || "Vendedor Kumela",
+        user: product.user || "Vendedor Kumela",
         quantity: 1 
       }];
     });

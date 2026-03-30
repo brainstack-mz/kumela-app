@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation"; 
 import { useSearch } from "@/context/SearchContext";
 import { productsData } from "@/data/products"; // IMPORTANTE: Importando do local central
-import ProductCard from "@/components/products-seller/ProductCard";
+import ProductCard from "@/components/products-user/ProductCard";
 
 const categories = [
   "Todos", "Frutas", "Legumes", "Verduras", "Raízes", "Laticínios", "Cereais",
@@ -26,7 +26,7 @@ export default function Products() {
   });
 
   const handlePreview = (productId: number) => {
-    router.push(`/produtos/${productId}`);
+    router.push(`/products/${productId}`);
   };
 
   

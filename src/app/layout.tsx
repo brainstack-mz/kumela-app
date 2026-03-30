@@ -21,18 +21,18 @@ function AppContent({ children }: { children: React.ReactNode }) {
   
   // 1. Definição de Rotas Especiais
   const isLoginPage = pathname === "/public/login";
-  const isCartPage = pathname === "/carrinho";
+  const isCartPage = pathname === "/cart";
   const isAdminPath = pathname.startsWith("/admin");
-  const isSellerPath = pathname.startsWith("/seller");  
+  const isuserPath = pathname.startsWith("/user");  
   
-  // 2. Identifica se é qualquer tipo de Dashboard (Admin ou Seller)
-  const isDashboardArea = isAdminPath || isSellerPath || pathname.includes("/dashboard");
+  // 2. Identifica se é qualquer tipo de Dashboard (Admin ou user)
+  const isDashboardArea = isAdminPath || isuserPath || pathname.includes("/dashboard");
 
   const isLegalPage = pathname === "/termos-de-uso" || pathname === "/politicas-de-privacidade";
-  const isProductDetailPage = pathname.startsWith("/produtos/") && pathname !== "/produtos";
+  const isProductDetailPage = pathname.startsWith("/products/") && pathname !== "/produtos";
   
-  // 3. Uma página só é "pública" se não for área de login, admin ou seller
-  const isPublicPage = !isAdminPath && !isSellerPath && !isLoginPage;
+  // 3. Uma página só é "pública" se não for área de login, admin ou user
+  const isPublicPage = !isAdminPath && !isuserPath && !isLoginPage;
 
   // 4. Lógica de exibição de componentes globais (Header/Footer do site principal)
   const showHeader = isPublicPage && !isCartPage && !isProductDetailPage;
@@ -41,7 +41,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* O Header público some quando o usuário entra no Admin ou no Seller */}
+      {/* O Header público some quando o usuário entra no Admin ou no user */}
       {showHeader && <Header />}
 
       <div className="flex flex-col flex-1">

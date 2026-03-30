@@ -30,7 +30,7 @@ const mockCartItems = [
     price: 150,
     quantity: 2,
     image: '/assets/imgs/tomate.jpeg',
-    seller: 'João Silva',
+    user: 'João Silva',
     location: 'Maputo, Moçambique',
     description: 'Tomates orgânicos colhidos hoje mesmo'
   },
@@ -40,7 +40,7 @@ const mockCartItems = [
     price: 200,
     quantity: 1,
     image: '/assets/imgs/arroz.jpeg',
-    seller: 'Maria Santos',
+    user: 'Maria Santos',
     location: 'Nampula, Moçambique',
     description: 'Arroz de alta qualidade, grão longo'
   },
@@ -50,7 +50,7 @@ const mockCartItems = [
     price: 80,
     quantity: 3,
     image: '/assets/imgs/banana.jpeg',
-    seller: 'Carlos Mendes',
+    user: 'Carlos Mendes',
     location: 'Beira, Moçambique',
     description: 'Bananas maduras e doces'
   }
@@ -112,11 +112,11 @@ export default function KindnessPage() {
                     {item.description}
                   </p>
                   
-                  {/* Seller Info */}
+                  {/* user Info */}
                   <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                     <div className="flex items-center gap-1">
                       <User className="h-4 w-4" />
-                      <span>{item.seller}</span>
+                      <span>{item.user}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <MapPin className="h-4 w-4" />

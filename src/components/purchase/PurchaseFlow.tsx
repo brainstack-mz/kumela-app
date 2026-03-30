@@ -19,8 +19,8 @@ interface Product {
   discount?: number;
   stock: number;
   description: string;
-  seller: string;
-  sellerPhone: string;
+  user: string;
+  userPhone: string;
   unit: string;
 }
 
@@ -114,15 +114,15 @@ export default function PurchaseFlow({ product, onClose }: PurchaseFlowProps) {
     localStorage.setItem("transporter_notifications", JSON.stringify(transporterNotifications));
 
     // Notificar vendedor
-    const sellerNotifications = JSON.parse(localStorage.getItem("seller_notifications") || "[]");
-    sellerNotifications.push({
+    const userNotifications = JSON.parse(localStorage.getItem("user_notifications") || "[]");
+    userNotifications.push({
       id: Date.now(),
       type: "new_order",
       message: `Nova venda de ${order.product.name} - ${order.purchaseData.quantity} ${order.product.unit}`,
       orderId: order.id,
       createdAt: new Date().toISOString(),
     });
-    localStorage.setItem("seller_notifications", JSON.stringify(sellerNotifications));
+    localStorage.setItem("user_notifications", JSON.stringify(userNotifications));
   };
 
   const handleBack = () => {

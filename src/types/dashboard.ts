@@ -14,7 +14,7 @@ export interface Product {
   location: string;
   discount?: number;
   image: string;
-  sellerId?: string;
+  userId?: string;
 }
 
 export interface Sale {
@@ -44,7 +44,7 @@ export interface Order {
     category: string;
     description: string;
   };
-  seller: {
+  user: {
     name: string;
     phone: string;
   };
@@ -69,7 +69,7 @@ export interface Delivery {
   to: string;
   status: "pending" | "accepted" | "completed";
   price: number;
-  seller: {
+  user: {
     name: string;
     phone: string;
   };

@@ -3,7 +3,7 @@
 export interface User {
   numero: string;
   password: string;
-  role: "admin" | "buyer" | "seller" | "shipper";
+  role: "admin" | "buyer" | "user" | "shipper";
   name?: string;
   province?: string;
   district?: string;
@@ -27,15 +27,15 @@ export interface SmartFormData {
 
 export const DASHBOARD_URLS = {
   admin: "/admin/dashboard",
-  buyer: "/seller/dashboard",
-  seller: "/seller/dashboard",
-  shipper: "/seller/dashboard",
+  buyer: "/user/dashboard",
+  user: "/user/dashboard",
+  shipper: "/user/dashboard",
 };
 
 export const USERS: User[] = [
   { numero: "841234567", password: "123456", role: "admin", name: "Admin User", province: "Nampula", district: "Nampula Cidade" },
   { numero: "842934326", password: "1234", role: "buyer", name: "João Cliente", province: "Nampula", district: "Nampula Cidade" },
-  { numero: "861998877", password: "vendo123", role: "seller", name: "Maria Vendedora", province: "Nampula", district: "Monapo" },
+  { numero: "861998877", password: "vendo123", role: "user", name: "Maria Vendedora", province: "Nampula", district: "Monapo" },
   { numero: "851112233", password: "transportador123", role: "shipper", name: "Carlos Transportador", province: "Nampula", district: "Mossuril" },
   { numero: "870570364", password: "123456", role: "buyer", name: "Lutyrano Etrice", province: "Nampula", district: "Meconta" },    
 ];

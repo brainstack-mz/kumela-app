@@ -14,8 +14,8 @@ interface Product {
   discount?: number;
   stock: number;
   description: string;
-  seller: string;
-  sellerPhone: string;
+  user: string;
+  userPhone: string;
   unit: string;
 }
 
@@ -38,7 +38,7 @@ export default function Step1ProductSelection({ product, onBack, onNext }: Step1
       toast.error("Preencha todos os campos!");
       return;
     }
-    const smsUrl = `sms:${product.sellerPhone}?body=${encodeURIComponent(
+    const smsUrl = `sms:${product.userPhone}?body=${encodeURIComponent(
       `Olá, sou ${messageData.name} (${messageData.phone}). ${messageData.message}`
     )}`;
     window.location.href = smsUrl;
@@ -120,11 +120,11 @@ export default function Step1ProductSelection({ product, onBack, onNext }: Step1
                     </p>
                   </div>
 
-                  {/* Seller */}
+                  {/* user */}
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Vendedor</p>
                     <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {product.seller}
+                      {product.user}
                     </p>
                   </div>
                 </div>

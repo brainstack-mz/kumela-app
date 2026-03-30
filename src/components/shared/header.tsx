@@ -106,7 +106,7 @@ export default function Header() {
             </div>
 
             {/* Carrinho Desktop Atualizado */}
-            <Link href="/carrinho" className="flex items-center gap-2 hover:text-green-700 transition font-bold text-sm">
+            <Link href="/cart" className="flex items-center gap-2 hover:text-green-700 transition font-bold text-sm">
               <div className="relative p-1">
                 <ShoppingCart size={22} />
                 <AnimatePresence>
