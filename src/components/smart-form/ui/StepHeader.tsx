@@ -1,3 +1,5 @@
+// components/smart-form/ui/StepHeader.tsx
+
 import { Volume2, VolumeX } from "lucide-react";
 import { useAudioHelper } from "../hooks/useAudioHelper";
 
@@ -10,7 +12,7 @@ export const StepHeader = ({ title, audioPath }: StepHeaderProps) => {
   const { isPlaying, togglePlay } = useAudioHelper(audioPath);
 
   return (
-    <div className="mb-6">
+    <div className="mb-0">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-[#334155]">
           {title}

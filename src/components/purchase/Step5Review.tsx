@@ -2,24 +2,42 @@
 
 import { motion } from "framer-motion";
 import {
-  CheckCircle,
   ArrowRight,
   Package,
   MapPin,
   Truck,
   User,
   Phone,
-  X,
   ShieldCheck,
 } from "lucide-react";
 import Image from "next/image";
+import { StepHeader } from "@/components/smart-form/ui/StepHeader";
+
+interface Product {
+  name: string;
+  image: string;
+  description: string;
+  user: string;
+}
+
+interface PurchaseData {
+  name: string;
+  phone: string;
+  province: string;
+  district: string;
+  bairro: string;
+  quantity: number;
+  subtotal: number;
+  shipping: number;
+  carrier: string;
+  total: number;
+}
 
 interface Step5Props {
-  product: any;
-  purchaseData: any;
+  product: Product;
+  purchaseData: PurchaseData;
   onBack: () => void;
-  onNext: (data: any) => void;
-  onClose?: () => void;
+  onNext: (data: PurchaseData) => void;
 }
 
 export default function Step5Review({
@@ -27,191 +45,114 @@ export default function Step5Review({
   purchaseData,
   onBack,
   onNext,
-  onClose,
 }: Step5Props) {
-  const unitPrice = (purchaseData.subtotal || 0) / (purchaseData.quantity || 1);
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.98 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="w-full bg-white text-gray-900 rounded-3xl relative flex flex-col max-h-[90vh]"
+      // z-[60] garante que fique a frente do Header do Kumela Market
+      // max-h-[65vh] impede que o componente fique alto demais em telas pequenas
+      className="w-full flex flex-col max-h-[65vh] h-fit relative z-[60]" 
     >
-      {/* Header Fixo */}
-      <div className="p-6 pb-2 border-b border-gray-50">
-        <div className="mb-2">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-green-600 uppercase tracking-widest">
-              ETAPA 4 de 4
-            </span>
-
-            <span className="text-xs text-gray-400">Revisão Final</span>
-          </div>
-          <div className="w-full h-1.5 bg-gray-100 rounded-full">
-            <div
-              className="h-1.5 bg-green-500 rounded-full transition-all duration-700"
-              style={{ width: "100%" }}
-            ></div>
-          </div>
-        </div>
-        <div className="text-center ">
-          <div className="inline-flex items-center justify-center w-10 h-10 bg-green-100 rounded-full mb-3">
-            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-          </div>
-        </div>
-        <h2 className="text-lg text-center font-bold text-gray-800 leading-tight">
-          Revise sua Compra
-        </h2>
-        <p className="text-[12px] text-center text-gray-500">
-          Confirme se tudo está correto antes de pagar.
-        </p>
-      </div>
+      <StepHeader 
+        title="Revisão Final" 
+        audioPath="/audio/Recording_5.m4a" 
+      />
 
       {/* Área de Conteúdo com Scroll */}
-      <div className="flex-1 overflow-y-auto p-6 pt-4 space-y-6 custom-scrollbar">
-        {/* Seção Produto */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-2 text-gray-400">
-            <Package size={16} />
-            <span className="text-xs font-bold uppercase tracking-tighter">
-              Item do Pedido
+      <div className="flex-1 overflow-y-auto pr-1 space-y-4 custom-scrollbar pb-2">
+        <p className="text-[12px] text-center text-gray-500 font-medium">
+          Confirme os dados antes de finalizar
+        </p>
+
+        {/* Produto */}
+        <div className="flex gap-3 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+          <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-white">
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="text-xs font-bold text-gray-800 truncate">
+              {product.name}
+            </h4>
+            <p className="text-[10px] text-green-600 font-bold">
+              Vendido por: {product.user || "Horta Zambézia"}
+            </p>
+          </div>
+        </div>
+
+        {/* Detalhes do Destino - Correção da Exibição */}
+        <div className="p-4 bg-white rounded-2xl border border-gray-100 space-y-3 shadow-sm">
+          <div className="flex items-center gap-2 border-b border-gray-50 pb-2">
+            <User size={13} className="text-gray-400" />
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              Detalhes do Destino
             </span>
           </div>
-          <div className="flex gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-            <div className="relative w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 shadow-sm border border-white">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="flex-1 min-w-0 flex flex-col justify-center">
-              <h4 className="text-base font-bold text-gray-800 leading-tight">
-                {product.name}
-              </h4>
-              <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-                {product.description}
-              </p>
-              <p className="text-[11px] text-green-600 font-bold mt-1">
-                Vendido por: {product.user}
+          
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-3">
+              <Phone size={14} className="text-green-600" />
+              <p className="text-xs font-semibold text-gray-700">
+                {purchaseData.phone || "Número não informado"}
               </p>
             </div>
-          </div>
-        </section>
-
-        {/* Seção Entrega e Cliente */}
-        <section className="grid grid-cols-1 gap-4">
-          <div className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm space-y-3">
-            <div className="flex items-center gap-2 text-gray-400 border-b border-gray-50 pb-2">
-              <User size={16} />
-              <span className="text-xs font-bold uppercase tracking-tighter">
-                Dados de Entrega
-              </span>
-            </div>
-            <div className="grid grid-cols-1 gap-3">
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
-                  <User size={14} />
-                </div>
-                <div>
-                  <p className="text-[10px] text-gray-400 uppercase font-bold">
-                    Destinatário
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    {purchaseData.name}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
-                  <Phone size={14} />
-                </div>
-                <div>
-                  <p className="text-[10px] text-gray-400 uppercase font-bold">
-                    Contacto
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    {purchaseData.phone}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
-                  <MapPin size={14} />
-                </div>
-                <div>
-                  <p className="text-[10px] text-gray-400 uppercase font-bold">
-                    Endereço
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    {purchaseData.province}, {purchaseData.district} -{" "}
-                    {purchaseData.bairro}
-                  </p>
-                </div>
+            <div className="flex items-start gap-3">
+              <MapPin size={14} className="text-green-600 mt-0.5" />
+              <div className="text-xs font-medium text-gray-600 leading-tight">
+                {/* Fallbacks para garantir que algo apareça mesmo se purchaseData estiver incompleto */}
+                <p>{purchaseData.province || "Nampula"}, {purchaseData.district || "Distrito"}</p>
+                <p className="text-gray-400 text-[11px]">{purchaseData.bairro || "Endereço não especificado"}</p>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
         {/* Resumo Financeiro */}
-        <section className="p-5 bg-emerald-50 rounded-2xl border border-emerald-100 text-black shadow-lg shadow-green-100">
-          <div className="flex items-center gap-2 mb-4 opacity-80">
-            <Truck size={16} />
-            <span className="text-xs font-bold uppercase tracking-tighter">
-              Resumo de Valores
+        <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 space-y-2">
+          <div className="flex justify-between text-[11px] text-emerald-800 font-medium">
+            <span className="flex items-center gap-1.5"><Package size={12}/> Subtotal ({purchaseData.quantity}x):</span>
+            <span className="font-bold">{purchaseData.subtotal?.toLocaleString() || "0"} MT</span>
+          </div>
+          <div className="flex justify-between text-[11px] text-emerald-800 font-medium">
+            <span className="flex items-center gap-1.5"><Truck size={12}/> {purchaseData.carrier || "Transporte"}:</span>
+            <span className="font-bold">{purchaseData.shipping?.toLocaleString() || "0"} MT</span>
+          </div>
+          <div className="pt-2 border-t border-emerald-200/50 flex justify-between items-center">
+            <span className="text-[10px] font-black text-emerald-900 uppercase">Total</span>
+            <span className="text-xl font-black text-emerald-600">
+              {purchaseData.total?.toLocaleString() || "0"} MT
             </span>
           </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="opacity-90">
-                Subtotal ({purchaseData.quantity} itens)
-              </span>
-              <span className="font-bold">
-                {purchaseData.subtotal.toFixed(0)} MT
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="opacity-90">
-                Transporte ({purchaseData.carrier})
-              </span>
-              <span className="font-bold">
-                {purchaseData.shipping.toFixed(0)} MT
-              </span>
-            </div>
-            <div className="pt-3 mt-3 border-t border-white/20 flex justify-between items-end">
-              <span className="text-base font-bold">Total Geral</span>
-              <span className="text-3xl font-black">
-                {(purchaseData.total || 0).toFixed(0)} MT
-              </span>
-            </div>
-          </div>
-        </section>
+        </div>
 
-        {/* Selo de Segurança */}
-        <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-          <ShieldCheck className="text-emerald-600 flex-shrink-0" size={24} />
-          <p className="text-xs text-emerald-800 leading-relaxed italic">
-            <strong>Compra Garantida:</strong> Seu dinheiro está seguro. O
-            vendedor só recebe após você confirmar a entrega.
+               {/* Selo de Segurança */}
+        <div className="flex items-center gap-3 p-3 bg-white rounded-2xl border border-green-100">
+          <ShieldCheck className="text-green-600 flex-shrink-0" size={20} />
+          <p className="text-[10px] text-gray-500 leading-tight font-medium">
+            <strong className="text-green-700">Pagamento Seguro:</strong> O valor fica retido até que você receba o produto em mãos.
           </p>
         </div>
       </div>
 
-      {/* Footer Fixo com Botões */}
-      <div className="p-6 border-t border-gray-50 flex gap-4 bg-white rounded-b-3xl">
+      {/* Botões */}
+      <div className="flex gap-3 pt-3 border-t border-gray-50 bg-white">
         <button
           onClick={onBack}
-          className="flex-1 h-14 rounded-2xl border-2 border-gray-100 text-gray-500 font-bold text-base hover:bg-gray-50 transition-all"
+          className="flex-1 h-12 rounded-xl border border-gray-200 text-gray-500 font-bold text-sm hover:bg-gray-50 transition-all"
         >
           Voltar
         </button>
         <button
           onClick={() => onNext(purchaseData)}
-          className="flex-[2] h-14 rounded-2xl bg-green-600 text-white font-bold text-base hover:bg-green-700 active:scale-[0.97] transition-all flex items-center justify-center gap-2 shadow-xl shadow-green-100"
+          className="flex-[2] h-12 rounded-xl bg-[#065f46] text-white font-bold text-sm hover:bg-emerald-900 active:scale-95 transition-all flex items-center justify-center gap-2"
         >
-          Finalizar Pedido
-          <ArrowRight size={20} />
+          Confirmar Pedido
+          <ArrowRight size={16} />
         </button>
       </div>
     </motion.div>

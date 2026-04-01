@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { ShoppingCart, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 
-// Interface atualizada para ser compatível com o banco de dados de produtos
 interface ProductCardProps {
   product: {
     id: number;
@@ -14,7 +13,7 @@ interface ProductCardProps {
     price: number;
     discount?: number;
     location: string;
-    category?: string; // Adicionado para compatibilidade
+    category?: string;
     quantity?: number | string;
     stock?: number;
     unit?: string;
@@ -42,7 +41,7 @@ export default function ProductCard({ product, onPreview }: ProductCardProps) {
 
   return (
     <motion.div
-      className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
+      className="bg-card rounded-lg overflow-hidden shadow-lg border border-border hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer"
       whileHover={{ scale: 1.02 }}
       onClick={() => onPreview(product.id)}
     >
@@ -65,8 +64,8 @@ export default function ProductCard({ product, onPreview }: ProductCardProps) {
           onClick={handleCartClick}
           className={`absolute bottom-2 right-2 rounded-full p-3 flex items-center justify-center shadow-lg transition-all duration-300 ${
             isInCart 
-              ? "bg-red-500 text-white" 
-              : "bg-white bg-opacity-80 text-green-700 hover:bg-opacity-100"
+              ? "bg-red-500 text-white scale-110" 
+              : "bg-white/90 dark:bg-slate-800/90 text-green-700 dark:text-green-400 hover:bg-white dark:hover:bg-slate-700"
           }`}
         >
           {isInCart ? <Trash2 size={20} /> : <ShoppingCart size={22} />}
@@ -75,23 +74,23 @@ export default function ProductCard({ product, onPreview }: ProductCardProps) {
 
       <div className="p-4 flex flex-col justify-between">
         <div>
-          <h3 className="text-lg font-bold text-gray-900 truncate">{product.name}</h3>
-          <p className="text-sm text-gray-500 mt-1">{product.location}</p>
+          <h3 className="text-lg font-bold text-card-foreground truncate">{product.name}</h3>
+          <p className="text-sm text-muted-foreground mt-1">{product.location}</p>
         </div>
         <div className="flex items-center justify-between mt-3">
           <div className="flex flex-col">
-            <p className="text-xl font-extrabold text-[#2E7D32]">
+            <p className="text-xl font-extrabold text-[#2E7D32] dark:text-green-500">
               {finalPrice.toFixed(0)} <span className="text-sm">MT</span>
             </p>
             {product.discount && (
-              <span className="text-xs text-red-600 line-through font-bold">
+              <span className="text-xs text-red-600 dark:text-red-400 line-through font-bold">
                 {product.price.toFixed(0)} MT
               </span>
             )}
           </div>
           
           {isInCart && (
-            <span className="text-[10px] font-black text-green-600 bg-green-50 px-2 py-1 rounded">
+            <span className="text-[10px] font-black text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded">
               Na Carrinha
             </span>
           )}

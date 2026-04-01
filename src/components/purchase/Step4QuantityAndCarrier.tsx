@@ -1,16 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, X, Truck, Hash, ChevronDown } from "lucide-react"; 
+import { ArrowRight, Truck, Hash, ChevronDown } from "lucide-react"; 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { StepHeader } from "@/components/smart-form/ui/StepHeader";
 
-interface Step4Props {
-  product: any;
-  purchaseData: any;
+interface Step3Props {
+  product: {
+    price: number;
+    discount?: number;
+    stock: number;
+    unit: string;
+  };
+  purchaseData: {
+    quantity?: number;
+    carrier?: string;
+  };
   onBack: () => void;
   onNext: (data: any) => void;
-  onClose?: () => void;
 }
 
 const CARRIERS = [
@@ -19,13 +27,14 @@ const CARRIERS = [
   { name: "Transporte Mugaby", time: "2-5 dias", price: 60 },
 ];
 
-export default function Step3QuantityAndCarrier({ product, purchaseData, onBack, onNext, onClose }: Step4Props) {
-  const [quantity, setQuantity] = useState(purchaseData.quantity || 1);
-  const [carrier, setCarrier] = useState(purchaseData.carrier || "");
+export default function Step3QuantityAndCarrier({ product, purchaseData, onBack, onNext }: Step3Props) {
+  const [quantity, setQuantity] = useState<number>(purchaseData.quantity || 1);
+  const [carrier, setCarrier] = useState<string>(purchaseData.carrier || "");
 
   const unitPrice = product.discount 
     ? product.price - (product.price * product.discount / 100)
     : product.price;
+  
   const subtotal = unitPrice * quantity;
   const selectedCarrier = CARRIERS.find(c => c.name === carrier);
   const shipping = selectedCarrier?.price || 0;
@@ -42,7 +51,6 @@ export default function Step3QuantityAndCarrier({ product, purchaseData, onBack,
     }
 
     onNext({
-      ...purchaseData,
       quantity,
       carrier,
       subtotal,
@@ -53,103 +61,94 @@ export default function Step3QuantityAndCarrier({ product, purchaseData, onBack,
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="w-full bg-white text-gray-900 rounded-3xl overflow-hidden relative p-5 sm:p-6"
+      initial={{ opacity: 0, x: 10 }}
+      animate={{ opacity: 1, x: 0 }}
+      className="w-full space-y-6"
     >
-   
-      {/* Progress Indicator */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[10px] font-bold text-green-600 uppercase tracking-wider">ETAPA 3 de 4</span>
-          <span className="text-[10px] text-gray-400 font-medium">Logística</span>
-        </div>
-        <div className="w-full h-1 bg-gray-100 rounded-full">
-          <div className="h-1 bg-green-500 rounded-full transition-all duration-500" style={{ width: "75%" }}></div>
-        </div>
-      </div>
+      {/* Header com Áudio unificado */}
+      <StepHeader 
+        title="Logística" 
+        audioPath="/audio/Recording_5.m4a" 
+      />
 
-      <div className="space-y-4">
-        <div className="text-center mb-2">
-          <div className="inline-flex items-center justify-center w-10 h-10 bg-green-50 rounded-full mb-2">
-            <Truck className="w-5 h-5 text-green-600" />
-          </div>
-          <h2 className="text-lg font-bold text-gray-800 leading-tight">Envio e Quantidade</h2>
-          <p className="text-[12px] text-gray-500">Quanto e como deseja receber?</p>
-        </div>
+     
 
-        <div className="space-y-3">
+        <div className="space-y-1">
           {/* Campo Quantidade */}
           <div className="space-y-1">
             <div className="flex justify-between items-center ml-1">
-              <label className="text-[11px] font-bold text-gray-500 uppercase flex items-center gap-1.5">
+              <label className="text-[11px] h-10 font-bold text-gray-500 uppercase flex items-center gap-1.5">
                 <Hash size={12} /> Quantidade ({product.unit})
               </label>
-              <span className="text-[13px] text-green-900">Stock: {product.stock}</span>
+              <span className="text-[11px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                Stock: {product.stock}
+              </span>
             </div>
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Math.max(1, Math.min(product.stock, parseInt(e.target.value) || 1)))}
-              className="w-full h-11 px-4 text-base font-bold border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-green-500 outline-none transition-all"
-              min={1}
-              max={product.stock}
-            />
+            <div className="flex items-center border border-gray-200 rounded-2xl p-4 bg-gray-50 focus-within:ring-2 ring-green-500 transition-all h-10">
+              <input
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(1, Math.min(product.stock, parseInt(e.target.value) || 1)))}
+                className="w-full outline-none bg-transparent font-bold text-gray-900 text-lg"
+                min={1}
+                max={product.stock}
+              />
+            </div>
           </div>
 
           {/* Seleção de Transportadora */}
           <div className="space-y-1">
             <label className="text-[11px] font-bold text-gray-500 uppercase ml-1">Transportadora</label>
-            <div className="relative">
+            <div className="relative border border-gray-200 rounded-2xl bg-gray-50 focus-within:ring-2 ring-green-500 transition-all h-10">
               <select
                 value={carrier}
                 onChange={(e) => setCarrier(e.target.value)}
-                className="w-full h-11 px-4 appearance-none text-sm border border-gray-200 rounded-xl bg-white focus:border-green-500 outline-none transition-all pr-10"
+                className="w-full h-full px-4 appearance-none bg-transparent outline-none font-medium text-gray-900 text-sm"
               >
-                <option value="">Selecione quem entrega</option>
+                <option value="">Selecione o transportador</option>
                 {CARRIERS.map((c) => (
                   <option key={c.name} value={c.name}>
                     {c.name} (+{c.price} MT)
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
             </div>
           </div>
-        </div>
+        
 
-        {/* Resumo de Preços (Preview) */}
-        <div className="bg-emerald-50 rounded-2xl p-4 space-y-2 border border-emerald-100">
-          <div className="flex justify-between text-[11px] text-emerald-800">
+        {/* Resumo de Preços */}
+        <div className="bg-emerald-50 rounded-2xl p-5 space-y-3 border border-emerald-100 shadow-sm">
+          <div className="flex justify-between text-[12px] text-emerald-800 font-medium">
             <span>Subtotal ({quantity}x):</span>
-            <span className="font-bold">{subtotal.toFixed(0)} MT</span>
+            <span className="font-bold">{subtotal.toLocaleString()} MT</span>
           </div>
-          <div className="flex justify-between text-[11px] text-emerald-800">
+          <div className="flex justify-between text-[12px] text-emerald-800 font-medium">
             <span>Custo de Entrega:</span>
-            <span className="font-bold">{shipping.toFixed(0)} MT</span>
+            <span className="font-bold">{shipping.toLocaleString()} MT</span>
           </div>
-          <div className="flex justify-between pt-2 border-t border-emerald-200/50">
-            <span className="text-sm font-bold text-emerald-900">Total a Pagar:</span>
-            <span className="text-lg font-black text-emerald-600">{total.toFixed(0)} MT</span>
+          <div className="flex justify-between pt-3 border-t border-emerald-200/50">
+            <span className="text-sm font-bold text-emerald-900 uppercase tracking-tight">Total a Pagar:</span>
+            <span className="text-xl font-black text-emerald-600">{total.toLocaleString()} MT</span>
           </div>
         </div>
       </div>
 
-      {/* Navegação */}
-      <div className="mt-6 flex gap-3">
+      {/* Navegação Responsiva */}
+      <div className="flex gap-3 pt-2">
         <button
           onClick={onBack}
-          className="flex-1 h-12 rounded-xl border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition-all"
+          className="flex-1 h-14 rounded-2xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-all active:scale-95"
         >
           Voltar
         </button>
         <button
           onClick={handleNext}
           disabled={!carrier || quantity < 1}
-          className="flex-[2] h-12 rounded-xl bg-green-600 text-white font-bold text-sm hover:bg-green-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 shadow-md shadow-green-100"
+          className="flex-[2] h-14 rounded-2xl bg-green-800 text-white font-bold hover:bg-green-900 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-green-100"
         >
           Próximo
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight size={18} />
         </button>
       </div>
     </motion.div>

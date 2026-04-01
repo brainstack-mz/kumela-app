@@ -1,4 +1,3 @@
-// components/universal-components/Hero.tsx
 "use client";
 
 import AnnounceModal from "@/components/modals/AnnounceModal";
@@ -6,12 +5,14 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Megaphone, ShoppingBag } from "lucide-react";
 
-const colors = {
-  accentBlue: "#1976D2",
-  accentOrange: "#FF9800",
-};
+interface Slide {
+  subtitle: string;
+  title: string;
+  description: string;
+  image: string;
+}
 
-const slides = [
+const slides: Slide[] = [
   {
     subtitle: "Dificuldades para vender?",
     title: "Venda Mais e Melhor Com a KUMELA!",
@@ -61,31 +62,29 @@ const Hero = () => {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      nextSlide();
-    }, SLIDE_DURATION);
-
+    const timer = setInterval(nextSlide, SLIDE_DURATION);
     return () => clearInterval(timer);
   }, [nextSlide]);
 
   const currentSlideData = slides[currentSlide];
 
   const scrollToProducts = () => {
-    const section = document.getElementById("Produts");
+    const section = document.getElementById("products");
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <section
       id="hero"
-      className="relative w-full font-sans flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-50 to-white py-10 md:py-26 mt-16 md:mt-0"
+      className="relative w-full font-sans flex items-center justify-center overflow-hidden bg-background py-10 md:py-24 mt-16 md:mt-0 transition-colors duration-300"
     >
-      <div className="hidden md:block absolute inset-0 opacity-90 pointer-events-none">
+      {/* SVG Decorativo */}
+      <div className="hidden md:block absolute inset-0 opacity-80 dark:opacity-10 pointer-events-none">
         <svg className="w-full h-full" viewBox="0 0 1440 900" fill="none">
           <defs>
             <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#81C784" stopOpacity="0.9" />
-              <stop offset="100%" stopColor="#4CAF50" stopOpacity="0.7" />
+              <stop offset="0%" stopColor="#4CAF50" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#2E7D32" stopOpacity="0.5" />
             </linearGradient>
           </defs>
           <motion.path 
@@ -96,7 +95,7 @@ const Hero = () => {
       </div>
 
       <div className="relative w-full max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-center px-4 md:px-8 gap-10 md:gap-4">
-        <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left">
+        <div className="w-full md:w-1/2 flex flex-col justify-center text-center md:text-left z-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentSlide}
@@ -106,13 +105,13 @@ const Hero = () => {
               exit="exit"
               transition={{ duration: 0.5 }}
             >
-              <p className="text-base sm:text-lg font-semibold text-gray-600 mb-3">
+              <p className="text-base sm:text-lg font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
                 {currentSlideData.subtitle}
               </p>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#2E7D32] leading-tight mb-6 max-w-xl mx-auto md:mx-0">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#2E7D32] dark:text-green-500 leading-tight mb-6 max-w-xl mx-auto md:mx-0">
                 {currentSlideData.title}
               </h1>
-              <p className="text-md sm:text-lg md:text-xl text-gray-600 font-light mb-8 max-w-2xl mx-auto md:mx-0 leading-relaxed">
+              <p className="text-md sm:text-lg md:text-xl text-foreground/80 dark:text-slate-400 font-light mb-8 max-w-2xl mx-auto md:mx-0 leading-relaxed">
                 {currentSlideData.description}
               </p>
             </motion.div>
@@ -121,15 +120,13 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center sm:justify-start">
             <button
               onClick={scrollToProducts}
-              style={{ backgroundColor: colors.accentBlue }}
-              className="inline-flex items-center justify-center gap-2 text-white px-8 py-3 rounded-xl font-bold text-base md:text-lg shadow-lg hover:scale-[1.03] transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 bg-[#1976D2] hover:bg-[#1565C0] text-white px-8 py-3 rounded-xl font-bold text-base md:text-lg shadow-lg active:scale-95 transition-all cursor-pointer"
             >
               <ShoppingBag size={20} /> Explorar Produtos
             </button>
             <button
               onClick={() => setShowModal(true)}
-              style={{ backgroundColor: colors.accentOrange }}
-              className="inline-flex items-center justify-center gap-2 text-white px-8 py-3 rounded-xl font-bold text-base md:text-lg shadow-lg hover:scale-[1.03] transition-all cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 bg-[#FF9800] hover:bg-[#F57C00] text-white px-8 py-3 rounded-xl font-bold text-base md:text-lg shadow-lg active:scale-95 transition-all cursor-pointer"
             >
               <Megaphone size={20} /> Anuncie Agora
             </button>
@@ -137,7 +134,7 @@ const Hero = () => {
         </div>
 
         <div className="relative w-full md:w-1/2 flex items-center justify-center p-6">
-          <div className="relative w-full max-w-[500px] aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-gray-100">
+          <div className="relative w-full max-w-[500px] aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-muted border border-border transition-colors">
             <AnimatePresence mode="wait">
               <motion.img
                 key={currentSlide}
@@ -151,19 +148,23 @@ const Hero = () => {
                 transition={{ duration: 0.5 }}
               />
             </AnimatePresence>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+            {/* Overlay sutil apenas para dar profundidade, sem esbranquiçar */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
           </div>
 
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 bg-white/50 backdrop-blur-sm rounded-full px-4 py-2 shadow-sm">
+          {/* Paginação Dots - CORREÇÃO: Removido o bg-white/60 que causava o ofuscamento */}
+          <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-3 py-2">
             {slides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className="p-1 focus:outline-none"
+                className="focus:outline-none group"
               >
                 <div
-                  className={`h-2.5 rounded-full transition-all duration-300 ${
-                    index === currentSlide ? "w-8 bg-[#2E7D32]" : "w-2.5 bg-gray-300"
+                  className={`h-2.5 rounded-full transition-all duration-300 shadow-sm ${
+                    index === currentSlide 
+                      ? "w-8 bg-[#2E7D32] dark:bg-green-500" 
+                      : "w-2.5 bg-gray-300 dark:bg-slate-700 group-hover:bg-gray-400"
                   }`}
                 />
               </button>

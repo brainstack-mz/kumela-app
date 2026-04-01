@@ -1,3 +1,4 @@
+ 
 import { Phone, User as UserIcon, ArrowRight, Lock } from "lucide-react";
 import { StepHeader } from "../ui/StepHeader";
 import { getUserByPhoneNumber, User } from "@/lib/users"; // Importamos a interface User

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation"; 
 import { useSearch } from "@/context/SearchContext";
-import { productsData } from "@/data/products"; // IMPORTANTE: Importando do local central
+import { productsData } from "@/data/products";
 import ProductCard from "@/components/products-user/ProductCard";
 
 const categories = [
@@ -29,21 +29,19 @@ export default function Products() {
     router.push(`/products/${productId}`);
   };
 
-  
-
   const handleSeeMore = () => {
     setVisibleProducts((prev) => prev + 6);
   };
 
   return (
-    <section id="products" className="relative w-full py-1 bg-white font-sans">
+    <section id="products" className="relative w-full py-1 bg-background font-sans transition-colors duration-300">
       <div className="container mx-auto px-2 md:px-8">
-        <p className="text-xl sm:text-2xl font-extrabold text-[#2E7D32] text-center mb-8 md:mb-12">
+        <p className="text-xl sm:text-2xl font-extrabold text-[#2E7D32] dark:text-green-500 text-center mb-8 md:mb-12">
           Faça sua compra com um simples clique
         </p>
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12 gap-6">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#2E7D32]">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#2E7D32] dark:text-green-500">
             Mais Recentes
           </h2>
           <nav className="flex flex-wrap items-center gap-2 md:gap-4 w-full md:w-auto">
@@ -51,10 +49,10 @@ export default function Products() {
               <button
                 key={index}
                 onClick={() => setSelectedCategory(cat)}
-                className={`cursor-pointer flex-shrink-0 px-4 py-2 rounded-full transition-colors duration-300 font-semibold text-sm sm:text-base ${
+                className={`cursor-pointer flex-shrink-0 px-4 py-2 rounded-full transition-all duration-300 font-semibold text-sm sm:text-base ${
                   selectedCategory === cat
-                    ? "bg-[#4CAF50] text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    ? "bg-[#4CAF50] text-white shadow-md"
+                    : "bg-muted text-muted-foreground hover:bg-gray-300 dark:hover:bg-slate-700"
                 }`}
               >
                 {cat}
@@ -63,7 +61,7 @@ export default function Products() {
           </nav>
         </div>
 
-        <hr className="my-8 border-t border-gray-200" />
+        <hr className="my-8 border-t border-border" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.slice(0, visibleProducts).map((product) => (
@@ -79,7 +77,7 @@ export default function Products() {
           <div className="flex justify-center mt-12">
             <button
               onClick={handleSeeMore}
-              className="px-8 py-3 cursor-pointer rounded-full bg-[#E8F5E9] text-[#2E7D32] font-semibold hover:bg-[#C8E6C9] transition-colors"
+              className="px-8 py-3 cursor-pointer rounded-full bg-green-100 dark:bg-green-900/30 text-[#2E7D32] dark:text-green-400 font-semibold hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
             >
               Ver Mais Produtos
             </button>
