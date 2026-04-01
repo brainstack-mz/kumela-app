@@ -1,12 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  /* outras opções aqui */
+
+  // Remove ESLint do config
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // ainda funciona
   },
 };
 
