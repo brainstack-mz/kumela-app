@@ -82,49 +82,42 @@ const ScrollControls = () => {
 
   const navItemClass = (path: string) => `
     flex flex-col items-center justify-center flex-1 gap-1 transition-all duration-300 active:scale-95
-    ${pathname === path ? "text-green-700 dark:text-green-500 scale-105" : "text-slate-400 dark:text-slate-500"}
+    ${pathname === path ? "text-green-700 scale-105" : "text-slate-400"}
   `;
 
   return (
     <>
       <audio ref={audioRef} src={audioFiles[language]} preload="auto" onEnded={() => setIsPlaying(false)} />
 
-      {/* --- CONTROLES FLUTUANTES (DESKTOP E MOBILE) --- */}
-      <div className="fixed bottom-20 md:bottom-10 right-4 md:right-10 z-[60] flex flex-col gap-3">
-        
-        {/* Botão de Texto Grande (Flutuante Mobile/Desktop) */}
+      {/* --- CONTROLES FLUTUANTES DESKTOP --- */}
+      <div className="hidden md:flex flex-col gap-3 fixed bottom-10 right-10 z-[60]">
+        {/* Botão Flutuante de Texto Grande (Apenas Desktop) */}
         <motion.button
           whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
           onClick={() => setIsTextEnlarged(!isTextEnlarged)}
-          className={`p-4 rounded-2xl shadow-xl border transition-all ${
-            isTextEnlarged 
-              ? "bg-blue-600 text-white border-blue-500" 
-              : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-100 dark:border-slate-700"
+          className={`p-4 rounded-2xl shadow-2xl border transition-all ${
+            isTextEnlarged ? "bg-blue-600 text-white border-blue-500" : "bg-white text-gray-700 border-gray-100 hover:bg-gray-50"
           }`}
         >
           {isTextEnlarged ? <EyeOff size={24} strokeWidth={2.5} /> : <Eye size={24} strokeWidth={2.5} />}
         </motion.button>
 
-        {/* Botão de Áudio (Flutuante Mobile/Desktop) */}
         <motion.button
           whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
           onClick={toggleAudio}
-          className={`p-4 rounded-2xl shadow-xl border transition-all ${
-            isPlaying 
-              ? "bg-green-600 text-white border-green-500" 
-              : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-100 dark:border-slate-700"
+          className={`p-4 rounded-2xl shadow-2xl border transition-all ${
+            isPlaying ? "bg-green-600 text-white border-green-500" : "bg-white text-gray-700 border-gray-100 hover:bg-gray-50"
           }`}
         >
           {isPlaying ? <VolumeX size={24} strokeWidth={2.5} /> : <Volume2 size={24} strokeWidth={2.5} />}
         </motion.button>
 
-        {/* Seta para o topo (Apenas na Home ao scrollar) */}
         <AnimatePresence>
           {isScrolled && isHomePage && (
             <motion.button
-              initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="bg-white dark:bg-slate-800 text-green-700 dark:text-green-500 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-xl hover:bg-green-700 hover:text-white transition-all flex items-center justify-center"
+              className="bg-white text-green-700 p-4 border border-gray-100 rounded-2xl shadow-2xl hover:bg-green-700 hover:text-white transition-all flex items-center justify-center"
             >
               <ArrowUp size={24} strokeWidth={2.5} />
             </motion.button>
@@ -133,7 +126,7 @@ const ScrollControls = () => {
       </div>
 
       {/* --- MOBILE NAV BAR --- */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 pb-safe shadow-lg">
         <div className="flex justify-around items-center h-16 px-2 relative">
           
           <button onClick={() => router.push("/")} className={navItemClass("/")}>
@@ -145,7 +138,7 @@ const ScrollControls = () => {
             <div className="relative">
               <ShoppingCart size={20} strokeWidth={pathname === "/cart" ? 2.5 : 2} />
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-orange-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full border border-white dark:border-slate-900">
+                <span className="absolute -top-1.5 -right-2 bg-orange-500 text-white text-[8px] font-black px-1 rounded-full border border-white">
                   {cartCount}
                 </span>
               )}
@@ -158,41 +151,52 @@ const ScrollControls = () => {
             <span className="text-[10px] font-bold">Conta</span>
           </button>
 
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`${navItemClass("")} ${isMenuOpen ? "text-green-700 dark:text-green-500" : ""}`}>
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className={`${navItemClass("")} ${isMenuOpen ? "text-green-700" : ""}`}>
             <MoreVertical size={20} />
             <span className="text-[10px] font-bold">Mais</span>
           </button>
 
-          {/* Menu Popup Mobile */}
           <AnimatePresence>
             {isMenuOpen && (
               <>
                 <motion.div 
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
                   onClick={() => setIsMenuOpen(false)} 
-                  className="fixed inset-0 bg-black/40 backdrop-blur-sm -z-10" 
+                  className="fixed inset-0 bg-black/20 backdrop-blur-sm -z-10" 
                 />
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} 
-                  className="absolute bottom-20 right-4 w-56 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 p-2 z-70"
+                  initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 15 }} 
+                  className="absolute bottom-20 right-4 w-60 bg-white dark:bg-slate-800 rounded-[24px] shadow-2xl border border-slate-100 dark:border-slate-700 p-2 z-70"
                 >
-                  <div className="relative mb-1 p-1">
+                  <div className="relative mb-2 p-1">
                     <Globe size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                     <select 
                       value={language} 
                       onChange={handleLanguageChange} 
-                      className="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-2xl py-3 pl-9 pr-4 text-xs font-bold appearance-none outline-none dark:text-white transition-colors"
+                      className="w-full bg-slate-50 dark:bg-slate-900 border-none rounded-xl py-2.5 pl-9 pr-4 text-xs font-bold appearance-none outline-none dark:text-white"
                     >
                       <option value="pt">Português</option>
                       <option value="em-MZ">Macua (EM)</option>
                     </select>
                   </div>
 
-                  <div className="h-[1px] bg-slate-50 dark:bg-slate-700/50 my-1 mx-2" />
+                  <div className="h-[1px] bg-slate-50 dark:bg-slate-700 my-1" />
 
                   <OptionBtn 
+                    icon={isPlaying ? VolumeX : Volume2} 
+                    label={isPlaying ? "Parar Áudio" : "Ouvir Página"} 
+                    onClick={toggleAudio} 
+                    active={isPlaying} 
+                  />
+                  <OptionBtn 
+                    icon={isTextEnlarged ? EyeOff : Eye} 
+                    label="Texto Grande" 
+                    onClick={() => setIsTextEnlarged(!isTextEnlarged)} 
+                    active={isTextEnlarged} 
+                  />
+                  <OptionBtn 
                     icon={Headset} 
-                    label="Apoio ao Cliente" 
+                    label="Apoio" 
                     onClick={() => { router.push("/#faq"); setIsMenuOpen(false); }} 
                   />
                 </motion.div>
@@ -215,11 +219,11 @@ interface OptionBtnProps {
 const OptionBtn = ({ icon: Icon, label, onClick, active = false }: OptionBtnProps) => (
   <button 
     onClick={onClick} 
-    className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-200 ${
+    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200 ${
       active ? "bg-green-50 dark:bg-green-900/20 text-green-700" : "hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
     }`}
   >
-    <div className={`p-2 rounded-xl ${active ? "bg-white dark:bg-slate-800 shadow-sm text-green-600" : "bg-slate-100 dark:bg-slate-900 text-slate-500"}`}>
+    <div className={`p-2 rounded-lg ${active ? "bg-white dark:bg-slate-800 shadow-sm" : "bg-slate-100 dark:bg-slate-900 text-slate-500"}`}>
       <Icon size={16} />
     </div>
     <span className="text-xs font-bold">{label}</span>
