@@ -11,9 +11,8 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { StepHeader } from "../ui/StepHeader";
-import Image from "next/image"; // Componente de otimização do Next.js
+import Image from "next/image";
 
-// Interface completa baseada em todos os passos anteriores
 interface Step5Props {
   formData: {
     name: string;
@@ -37,16 +36,8 @@ export const Step5Review = ({
   onConfirm,
   onEditStep,
 }: Step5Props) => {
-  // Garantimos que os valores sejam números para o cálculo
-  const price =
-    typeof formData.price === "string"
-      ? parseFloat(formData.price || "0")
-      : formData.price;
-  const discount =
-    typeof formData.discount === "string"
-      ? parseFloat(formData.discount || "0")
-      : formData.discount || 0;
-
+  const price = typeof formData.price === "string" ? parseFloat(formData.price || "0") : formData.price;
+  const discount = typeof formData.discount === "string" ? parseFloat(formData.discount || "0") : formData.discount || 0;
   const finalPrice = discount > 0 ? price - price * (discount / 100) : price;
 
   return (
@@ -58,74 +49,74 @@ export const Step5Review = ({
 
       <div className="space-y-3">
         {/* Seção 1: Vendedor e Localização */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm relative">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700 shadow-sm relative">
           <button
             onClick={() => onEditStep(1)}
-            className="absolute top-4 right-4 text-blue-500 hover:bg-blue-50 p-2 rounded-full transition-colors cursor-pointer"
+            className="absolute top-4 right-4 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 p-2 rounded-full transition-colors cursor-pointer"
           >
             <Edit3 size={18} />
           </button>
 
           <div className="flex items-center gap-3 mb-3">
-            <div className="bg-green-100 p-2 rounded-xl text-green-600">
+            <div className="bg-green-100 dark:bg-green-500/10 p-2 rounded-xl text-green-600 dark:text-green-400">
               <Phone size={20} />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase leading-none">
+              <p className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase leading-none">
                 Vendedor
               </p>
-              <p className="text-sm font-bold text-gray-700">
+              <p className="text-sm font-bold text-gray-700 dark:text-slate-200">
                 {formData.name || "Não informado"}
               </p>
-              <p className="text-xs text-gray-500">{formData.phone}</p>
+              <p className="text-xs text-gray-500 dark:text-slate-400">{formData.phone}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
+          <div className="flex items-center gap-2 bg-gray-50 dark:bg-slate-900/50 p-3 rounded-xl border border-gray-100 dark:border-slate-700">
             <MapPin size={16} className="text-red-500 shrink-0" />
-            <span className="text-xs text-gray-600 font-medium truncate">
+            <span className="text-xs text-gray-600 dark:text-slate-300 font-medium truncate">
               {formData.locality}, {formData.district}
             </span>
           </div>
         </div>
 
         {/* Seção 2: Detalhes do Produto */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm relative">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700 shadow-sm relative">
           <button
             onClick={() => onEditStep(3)}
-            className="absolute top-4 right-4 text-blue-500 hover:bg-blue-50 p-2 rounded-full transition-colors cursor-pointer"
+            className="absolute top-4 right-4 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 p-2 rounded-full transition-colors cursor-pointer"
           >
             <Edit3 size={18} />
           </button>
 
           <div className="flex items-start gap-3 mb-4">
-            <div className="bg-blue-100 p-2 rounded-xl text-blue-600">
+            <div className="bg-blue-100 dark:bg-blue-500/10 p-2 rounded-xl text-blue-600 dark:text-blue-400">
               <Package size={20} />
             </div>
             <div className="flex-1 pr-8">
-              <p className="text-[10px] font-bold text-gray-400 uppercase leading-none">
+              <p className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase leading-none">
                 {formData.category}
               </p>
-              <h3 className="font-extrabold text-gray-800 text-lg leading-tight">
+              <h3 className="font-extrabold text-gray-800 dark:text-white text-lg leading-tight">
                 {formData.name}
               </h3>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
                 {formData.stock} {formData.unit} disponível
               </p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between bg-green-50 p-3 rounded-xl border border-green-100">
+          <div className="flex items-center justify-between bg-green-50 dark:bg-green-500/5 p-3 rounded-xl border border-green-100 dark:border-green-900/30">
             <div>
-              <p className="text-[10px] font-bold text-green-700 uppercase">
+              <p className="text-[10px] font-bold text-green-700 dark:text-green-500 uppercase">
                 Preço Final
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-xl font-black text-green-600">
+                <span className="text-xl font-black text-green-600 dark:text-green-400">
                   {finalPrice.toLocaleString("pt-MZ")} MZN
                 </span>
                 {discount > 0 && (
-                  <span className="text-xs text-red-400 line-through">
+                  <span className="text-xs text-red-400 dark:text-red-500/70 line-through">
                     {price.toLocaleString("pt-MZ")} MZN
                   </span>
                 )}
@@ -140,15 +131,15 @@ export const Step5Review = ({
         </div>
 
         {/* Seção 3: Imagens e Descrição */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm relative">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-gray-100 dark:border-slate-700 shadow-sm relative">
           <button
             onClick={() => onEditStep(4)}
-            className="absolute top-4 right-4 text-blue-500 hover:bg-blue-50 p-2 rounded-full transition-colors cursor-pointer"
+            className="absolute top-4 right-4 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 p-2 rounded-full transition-colors cursor-pointer"
           >
             <Edit3 size={18} />
           </button>
 
-          <div className="flex items-center gap-2 mb-3 text-gray-400">
+          <div className="flex items-center gap-2 mb-3 text-gray-400 dark:text-slate-500">
             <ImageIcon size={18} />
             <span className="text-xs font-bold uppercase tracking-wider">
               Fotos e Descrição
@@ -163,9 +154,9 @@ export const Step5Review = ({
                   alt={`Preview ${i}`}
                   width={64}  
                   height={64}  
-                  className="rounded-xl object-cover border-2 border-white shadow-sm"
-                  unoptimized // IMPORTANTE: Se as imagens forem blob:URLs (Blob), adicione isso
-                />{" "}
+                  className="rounded-xl object-cover border-2 border-white dark:border-slate-700 shadow-sm"
+                  unoptimized
+                />
                 {i === 0 && (
                   <span className="absolute top-0 left-0 bg-green-500 text-[6px] text-white px-1 rounded-br-lg font-bold uppercase">
                     CAPA
@@ -175,16 +166,15 @@ export const Step5Review = ({
             ))}
           </div>
 
-          {/* O erro de any aqui foi resolvido pela interface Step5Props */}
-          <p className="text-sm text-gray-600 italic line-clamp-3 bg-gray-50 p-3 rounded-xl border border-dashed border-gray-300">
-            &quot;{formData.description || "Sem descrição..."}&quot;{" "}
+          <p className="text-sm text-gray-600 dark:text-slate-300 italic line-clamp-3 bg-gray-50 dark:bg-slate-900/50 p-3 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
+            &quot;{formData.description || "Sem descrição..."}&quot;
           </p>
         </div>
       </div>
 
       {/* Botão de Finalização */}
       <div className="pt-6">
-        <div className="flex items-center justify-center gap-2 mb-4 text-[#10B981] bg-green-50 py-2 rounded-full w-max mx-auto px-4">
+        <div className="flex items-center justify-center gap-2 mb-4 text-[#10B981] bg-green-50 dark:bg-green-500/10 py-2 rounded-full w-max mx-auto px-4">
           <ShieldCheck size={14} strokeWidth={3} />
           <span className="text-[10px] font-black uppercase tracking-wider">
             Publicação 100% Segura
@@ -205,19 +195,14 @@ export const Step5Review = ({
           "
         >
           <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-[-20deg]" />
-
-          <CheckCircle2
-            size={22}
-            strokeWidth={2.5}
-            className="group-hover:scale-110 transition-transform"
-          />
+          <CheckCircle2 size={22} strokeWidth={2.5} className="group-hover:scale-110 transition-transform" />
           <span className="tracking-tight">CONFIRMAR E PUBLICAR</span>
         </button>
 
         <div className="flex flex-col items-center gap-2 mt-4">
-          <p className="text-center text-[9px] text-gray-400 px-6 leading-relaxed">
+          <p className="text-center text-[9px] text-gray-400 dark:text-slate-500 px-6 leading-relaxed">
             Ao publicar, você concorda com os{" "}
-            <span className="text-green-600 font-bold underline cursor-pointer">
+            <span className="text-green-600 dark:text-green-400 font-bold underline cursor-pointer">
               termos de venda
             </span>{" "}
             da plataforma Kumela.

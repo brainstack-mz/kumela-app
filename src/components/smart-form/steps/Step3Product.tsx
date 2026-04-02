@@ -4,7 +4,6 @@ import { Layers, Hash, Coins, Info, Scale, Tag, Package } from "lucide-react";
 import { StepHeader } from "../ui/StepHeader";
 import { useAudioHelper } from "../hooks/useAudioHelper";
 
-// Interface para acabar com o erro de 'any'
 interface Step3Props {
   formData: {
     category: string;
@@ -24,7 +23,6 @@ interface Step3Props {
 export const Step3Product = ({ formData, updateField, onNext, onBack, onShowTable }: Step3Props) => {
   const { playOnce, stopAudio } = useAudioHelper("/audio/price.mp3");
 
-  // Validação de Preço (Bloqueia negativos)
   const handlePriceChange = (val: string) => {
     const value = parseFloat(val);
     if (val === "" || isNaN(value)) {
@@ -34,7 +32,6 @@ export const Step3Product = ({ formData, updateField, onNext, onBack, onShowTabl
     }
   };
 
-  // Validação de Desconto (0-100%)
   const handleDiscountChange = (val: string) => {
     const value = parseFloat(val);
     if (val === "" || isNaN(value)) {
@@ -50,29 +47,29 @@ export const Step3Product = ({ formData, updateField, onNext, onBack, onShowTabl
       <StepHeader title="Detalhes do Produto" audioPath="/audio/Recording_7.m4a" />
       
       {/* 1. Categoria */}
-      <div className="flex items-center border border-gray-200 rounded-2xl p-4 bg-gray-50 focus-within:ring-2 ring-green-500">
-        <Layers className="text-gray-400 mr-3" size={20} />
+      <div className="flex items-center border border-gray-200 dark:border-slate-700 rounded-2xl p-4 bg-gray-50 dark:bg-slate-800/50 focus-within:ring-2 ring-green-500 transition-colors">
+        <Layers className="text-gray-400 dark:text-slate-500 mr-3" size={20} />
         <select 
-          className="w-full outline-none bg-transparent cursor-pointer font-medium text-gray-700"
+          className="w-full outline-none bg-transparent cursor-pointer font-medium text-gray-700 dark:text-white transition-colors"
           value={formData.category}
           onChange={(e) => updateField("category", e.target.value)}
         >
-          <option value="">Selecione a Categoria</option>
-          <option value="Verduras">Verduras</option>
-          <option value="Frutas">Frutas</option>
-          <option value="Legumes">Legumes</option>
-          <option value="Raizes">Raizes</option>
-          <option value="Cereais">Cereais</option>
+          <option value="" className="dark:bg-slate-900">Selecione a Categoria</option>
+          <option value="Verduras" className="dark:bg-slate-900">Verduras</option>
+          <option value="Frutas" className="dark:bg-slate-900">Frutas</option>
+          <option value="Legumes" className="dark:bg-slate-900">Legumes</option>
+          <option value="Raizes" className="dark:bg-slate-900">Raizes</option>
+          <option value="Cereais" className="dark:bg-slate-900">Cereais</option>
         </select>
       </div>
  
-      {/* 2. Nome do Produto (Proteção contra Autofill indesejado) */}
-      <div className="flex items-center border border-gray-200 rounded-2xl p-4 bg-gray-50 focus-within:ring-2 ring-green-500 relative">
-        <Package className="text-gray-400 mr-3" size={20} />
+      {/* 2. Nome do Produto */}
+      <div className="flex items-center border border-gray-200 dark:border-slate-700 rounded-2xl p-4 bg-gray-50 dark:bg-slate-800/50 focus-within:ring-2 ring-green-500 relative transition-colors">
+        <Package className="text-gray-400 dark:text-slate-500 mr-3" size={20} />
         <input 
           type="text" 
           placeholder="Nome do Produto (ex: Tomate Fresco)"
-          className="w-full outline-none bg-transparent font-medium text-gray-700"
+          className="w-full outline-none bg-transparent font-medium text-gray-700 dark:text-white dark:placeholder:text-slate-500"
           value={formData.name} 
           onChange={(e) => updateField("name", e.target.value)}
           autoComplete="off"
@@ -82,11 +79,11 @@ export const Step3Product = ({ formData, updateField, onNext, onBack, onShowTabl
 
       {/* 3. Stock e Unidade */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex items-center border border-gray-200 rounded-2xl p-4 bg-gray-50 focus-within:ring-2 ring-green-500">
-          <Hash className="text-gray-400 mr-3" size={20} />
+        <div className="flex items-center border border-gray-200 dark:border-slate-700 rounded-2xl p-4 bg-gray-50 dark:bg-slate-800/50 focus-within:ring-2 ring-green-500 transition-colors">
+          <Hash className="text-gray-400 dark:text-slate-500 mr-3" size={20} />
           <input 
             type="number" placeholder="Stock" min="0"
-            className="w-full outline-none bg-transparent font-medium"
+            className="w-full outline-none bg-transparent font-medium dark:text-white dark:placeholder:text-slate-500"
             value={formData.stock}
             onChange={(e) => {
                 const val = e.target.value;
@@ -97,27 +94,27 @@ export const Step3Product = ({ formData, updateField, onNext, onBack, onShowTabl
             }}
           />
         </div>
-        <div className="flex items-center border border-gray-200 rounded-2xl p-4 bg-gray-50 focus-within:ring-2 ring-green-500">
-          <Scale className="text-gray-400 mr-3" size={20} />
+        <div className="flex items-center border border-gray-200 dark:border-slate-700 rounded-2xl p-4 bg-gray-50 dark:bg-slate-800/50 focus-within:ring-2 ring-green-500 transition-colors">
+          <Scale className="text-gray-400 dark:text-slate-500 mr-3" size={20} />
           <select 
-            className="w-full outline-none bg-transparent font-medium cursor-pointer text-gray-700"
+            className="w-full outline-none bg-transparent font-medium cursor-pointer text-gray-700 dark:text-white transition-colors"
             value={formData.unit}
             onChange={(e) => updateField("unit", e.target.value)}
           >
-            <option value="kg">kilograma (kg)</option>
-            <option value="molho">molho</option>
-            <option value="unidade">unidade</option>
+            <option value="kg" className="dark:bg-slate-900">kilograma (kg)</option>
+            <option value="molho" className="dark:bg-slate-900">molho</option>
+            <option value="unidade" className="dark:bg-slate-900">unidade</option>
            </select>
         </div>
       </div>
 
       {/* 4. Preço e Desconto */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex items-center border border-gray-200 rounded-2xl p-4 bg-gray-50 focus-within:ring-2 ring-green-500">
-            <Coins className="text-gray-400 mr-3" size={20} />
+        <div className="flex items-center border border-gray-200 dark:border-slate-700 rounded-2xl p-4 bg-gray-50 dark:bg-slate-800/50 focus-within:ring-2 ring-green-500 transition-colors">
+            <Coins className="text-gray-400 dark:text-slate-500 mr-3" size={20} />
             <input 
               type="number" placeholder="Preço"
-              className="w-full outline-none bg-transparent font-medium"
+              className="w-full outline-none bg-transparent font-medium dark:text-white dark:placeholder:text-slate-500"
               value={formData.price}
               onChange={(e) => handlePriceChange(e.target.value)}
             />
@@ -126,19 +123,19 @@ export const Step3Product = ({ formData, updateField, onNext, onBack, onShowTabl
                 onMouseEnter={() => playOnce()} 
                 onMouseLeave={() => stopAudio()} 
                 onClick={onShowTable}
-                className="ml-2 cursor-pointer text-blue-500 hover:text-blue-600 transition-all hover:scale-110"
+                className="ml-2 cursor-pointer text-blue-500 dark:text-blue-400 hover:text-blue-600 transition-all hover:scale-110"
                 title="Dica de Preços"
             >
                 <Info size={22} />
             </button>
         </div>
 
-        <div className="flex items-center border border-gray-200 rounded-2xl p-4 bg-gray-50 focus-within:ring-2 ring-red-400">
-          <Tag className="text-gray-400 mr-3" size={20} />
+        <div className="flex items-center border border-gray-200 dark:border-slate-700 rounded-2xl p-4 bg-gray-50 dark:bg-slate-800/50 focus-within:ring-2 ring-red-400 transition-colors">
+          <Tag className="text-gray-400 dark:text-slate-500 mr-3" size={20} />
           <input 
             type="number" 
             placeholder="Desc. %"
-            className="w-full outline-none bg-transparent font-medium text-red-500"
+            className="w-full outline-none bg-transparent font-medium text-red-500 dark:text-red-400 dark:placeholder:text-slate-500"
             value={formData.discount}
             onChange={(e) => handleDiscountChange(e.target.value)}
           />
@@ -149,14 +146,14 @@ export const Step3Product = ({ formData, updateField, onNext, onBack, onShowTabl
       <div className="flex gap-3 pt-4">
         <button 
           onClick={onBack} 
-          className="flex-1 py-4 cursor-pointer border border-gray-200 rounded-2xl font-bold text-gray-500 hover:bg-gray-50 active:scale-95 transition-all"
+          className="flex-1 py-4 cursor-pointer border border-gray-200 dark:border-slate-700 rounded-2xl font-bold text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 active:scale-95 transition-all"
         >
           Voltar
         </button>
         <button 
           onClick={onNext}
           disabled={!formData.category || !formData.price || !formData.stock || !formData.name}
-          className="flex-1 py-4 rounded-2xl bg-green-800 text-white font-bold disabled:opacity-50 hover:bg-green-900 active:scale-95 transition-all shadow-lg shadow-green-100"
+          className="flex-1 py-4 rounded-2xl bg-green-800 dark:bg-green-700 text-white font-bold disabled:opacity-50 hover:bg-green-900 dark:hover:bg-green-600 active:scale-95 transition-all shadow-lg shadow-green-100 dark:shadow-none"
         >
           Continuar
         </button>
