@@ -27,13 +27,11 @@ import OTPInput from "@/components/shared/OTPInput";
 import { Input } from "@/components/shared/Input";
 import { Button } from "@/components/shared/Button";
 
+// API
+import api, { setAuthToken } from "@/lib/api";
+
 // Data & Libs
-import {
-  loginUser,
-  getUserByPhoneNumber,
-  DASHBOARD_URLS,
-  User,
-} from "@/lib/users";
+import { DASHBOARD_URLS } from "@/lib/users";
 import { useAuth } from "@/context/AuthContext";
 import { provincesData } from "@/data/provincesData";
 
@@ -70,6 +68,8 @@ export default function AuthPage() {
   >("initial");
   const [regStep, setRegStep] = useState(1);
   const [isNewUser, setIsNewUser] = useState(false);
+  const [hasSetPassword, setHasSetPassword] = useState(false);
+  const [tempToken, setTempToken] = useState<string | null>(null);
 
   const [registerData, setRegisterData] = useState({
     name: "",
@@ -82,13 +82,15 @@ export default function AuthPage() {
   const districts =
     provincesData.find((p) => p.name === "Nampula")?.districts || [];
 
-  const getPurePhone = (phone: string) => {
+  // 🔥 CORREÇÃO: Garantir que retorna string
+  const getPurePhone = (phone: string): string => {
     let pure = phone.replace(/\s/g, "").replace(/\D/g, "");
     if (pure.startsWith("258")) pure = pure.substring(3);
-    return pure;
+    // Garantir que é string e tem apenas 9 dígitos
+    return pure.slice(0, 9);
   };
 
-  const validatePhone = (phone: string) => {
+  const validatePhone = (phone: string): boolean => {
     const pure = getPurePhone(phone);
     const validPrefixes = ["82", "83", "84", "85", "86", "87"];
     return (
@@ -97,62 +99,197 @@ export default function AuthPage() {
     );
   };
 
+  // Verificar telefone ao digitar
   useEffect(() => {
-    if (validatePhone(phoneNumber)) {
-      const pure = getPurePhone(phoneNumber);
-      const user = getUserByPhoneNumber(pure);
-      setIsNewUser(!user);
-    } else {
-      setIsNewUser(true);
-    }
+    const checkPhone = async () => {
+      if (validatePhone(phoneNumber)) {
+        const pure = getPurePhone(phoneNumber);
+        try {
+          // 🔥 Enviar como string no query param
+          const response = await api.get(`/auth/check`, {
+            params: { phone: pure }
+          });
+          if (response.data.success) {
+            setIsNewUser(response.data.is_new_user);
+            setHasSetPassword(response.data.has_set_password);
+          }
+        } catch (error) {
+          console.error("Erro ao verificar telefone:", error);
+          setIsNewUser(true);
+          setHasSetPassword(false);
+        }
+      } else {
+        setIsNewUser(true);
+        setHasSetPassword(false);
+      }
+    };
+
+    const timeoutId = setTimeout(checkPhone, 500);
+    return () => clearTimeout(timeoutId);
   }, [phoneNumber]);
 
-  const handleOTPRequest = () => {
-    if (!validatePhone(phoneNumber)) return toast.error("Número inválido");
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setStep("otp_entry");
-      toast.success("Código enviado!");
-    }, 800);
-  };
-
-  const handleFinalAuth = async () => {
-    setLoading(true);
-    const pure = getPurePhone(phoneNumber);
-    let targetUser: User | null = null;
-
-    if (step === "registration") {
-      if (password !== confirmPassword) {
-        setLoading(false);
-        return toast.error("As senhas não coincidem");
-      }
-      targetUser = {
-        numero: pure,
-        password: password,
-        role: "buyer",
-        name: `${registerData.name} ${registerData.lastName}`,
-      };
-    } else if (step === "password_entry") {
-      targetUser = loginUser(pure, password);
-    } else {
-      const existing = getUserByPhoneNumber(pure);
-      if (isNewUser) {
-        setLoading(false);
-        return setStep("registration");
-      }
-      targetUser = existing;
+  // Solicitar OTP
+  const handleOTPRequest = async () => {
+    if (!validatePhone(phoneNumber)) {
+      toast.error("Número inválido");
+      return;
     }
 
-    if (targetUser) {
-      authLogin(targetUser);
-      router.push(
-        targetUser.role === "admin"
-          ? DASHBOARD_URLS.admin
-          : "/user/dashboard",
+    setLoading(true);
+    // 🔥 Garantir que é string
+    const pure = getPurePhone(phoneNumber);
+
+    try {
+      // 🔥 Enviar como objeto com string
+      await api.post("/auth/otp", { phone: String(pure) });
+      setStep("otp_entry");
+      toast.success("Código enviado!");
+    } catch (error: any) {
+      console.error("Erro OTP:", error);
+      toast.error(error.response?.data?.error || "Erro ao enviar código");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Verificar OTP e fazer login
+  const handleVerifyOTP = async () => {
+    if (otp.length < 5) {
+      toast.error("Código inválido");
+      return;
+    }
+
+    setLoading(true);
+    // 🔥 Garantir que é string
+    const pure = getPurePhone(phoneNumber);
+
+    try {
+      // 🔥 Enviar como string
+      const response = await api.post("/auth/otp/verify", {
+        phone: String(pure),
+        otp: String(otp),
+      });
+
+      if (response.data.success) {
+        const { token, user } = response.data;
+        setAuthToken(token);
+        setTempToken(token);
+
+        if (!user.onboardingCompleted) {
+          // Usuário novo, precisa completar cadastro
+          setStep("registration");
+          toast.success("Verificação concluída! Complete seu cadastro.");
+        } else {
+          // Usuário já tem perfil
+          const userData = {
+            numero: user.phone,
+            role: "user",
+            name: user.fullName || `Usuário ${user.phone}`,
+          };
+          authLogin(userData);
+          router.push("/user/dashboard");
+        }
+      }
+    } catch (error: any) {
+      console.error("Erro verificação:", error);
+      toast.error(error.response?.data?.error || "Código inválido");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Login com senha
+  const handlePasswordLogin = async () => {
+    if (!password) {
+      toast.error("Digite sua senha");
+      return;
+    }
+
+    setLoading(true);
+    // 🔥 Garantir que é string
+    const pure = getPurePhone(phoneNumber);
+
+    try {
+      // 🔥 Enviar como string
+      const response = await api.post("/auth/password", {
+        phone: String(pure),
+        password: String(password),
+      });
+
+      if (response.data.success) {
+        const { token, user } = response.data;
+        setAuthToken(token);
+
+        const userData = {
+          numero: user.phone,
+          role: "user",
+          name: user.fullName || `Usuário ${user.phone}`,
+        };
+        authLogin(userData);
+        router.push("/user/dashboard");
+      }
+    } catch (error: any) {
+      console.error("Erro login:", error);
+      toast.error(error.response?.data?.error || "Senha incorreta");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Completar cadastro (onboarding)
+  const handleCompleteRegistration = async () => {
+    if (password !== confirmPassword) {
+      toast.error("As senhas não coincidem");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("A senha deve ter no mínimo 6 caracteres");
+      return;
+    }
+
+    if (!registerData.name || !registerData.lastName) {
+      toast.error("Preencha seu nome completo");
+      return;
+    }
+
+    if (!registerData.district || !registerData.address) {
+      toast.error("Preencha sua localização");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 🔥 Usar tempToken do OTP
+      const profileResponse = await api.post(
+        "/auth/profile",
+        {
+          fullName: `${registerData.name} ${registerData.lastName}`,
+          addressDetails: `${registerData.address}, ${registerData.district}`,
+          preferredLanguage: "pt",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${tempToken}`,
+          },
+        }
       );
-    } else {
-      toast.error("Erro na autenticação");
+
+      if (profileResponse.data.success) {
+        const userData = {
+          numero: getPurePhone(phoneNumber),
+          role: "user",
+          name: `${registerData.name} ${registerData.lastName}`,
+        };
+        authLogin(userData);
+        router.push("/user/dashboard");
+        toast.success("Cadastro concluído! Bem-vindo!");
+      }
+    } catch (error: any) {
+      console.error("Erro cadastro:", error);
+      toast.error(error.response?.data?.error || "Erro ao completar cadastro");
+    } finally {
       setLoading(false);
     }
   };
@@ -160,7 +297,7 @@ export default function AuthPage() {
   const RegistrationStepper = () => (
     <div className="relative flex items-center justify-between mb-8 px-2 max-w-xs mx-auto">
       <div className="absolute top-5 left-0 w-full h-[2px] bg-gray-100 -z-0" />
-      <motion.div 
+      <motion.div
         className="absolute top-5 left-0 h-[2px] bg-green-500 -z-0"
         initial={{ width: 0 }}
         animate={{ width: `${(regStep - 1) * 50}%` }}
@@ -171,8 +308,8 @@ export default function AuthPage() {
         { id: 3, label: "SENHA" },
       ].map((s) => (
         <div key={s.id} className="relative z-10 flex flex-col items-center gap-2">
-          <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               scale: regStep === s.id ? 1.1 : 1,
               backgroundColor: regStep >= s.id ? "#16a34a" : "#fff",
               borderColor: regStep >= s.id ? "#16a34a" : "#e5e7eb"
@@ -204,7 +341,7 @@ export default function AuthPage() {
 
       {/* Direita: Auth Container */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center relative h-full p-4 sm:p-6 overflow-hidden">
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -239,7 +376,7 @@ export default function AuthPage() {
                     <Button onClick={handleOTPRequest} loading={loading} className="w-full cursor-pointer bg-orange-500 hover:bg-orange-600 text-white font-bold h-14 rounded-2xl shadow-lg">
                       Entrar com OTP
                     </Button>
-                    {!isNewUser && validatePhone(phoneNumber) && (
+                    {!isNewUser && hasSetPassword && validatePhone(phoneNumber) && (
                       <Button onClick={() => setStep("password_entry")} className="w-full cursor-pointer border-2 border-slate-100 text-slate-700 font-bold h-14 rounded-2xl hover:bg-slate-50 transition-colors">
                         Entrar com Senha
                       </Button>
@@ -298,17 +435,17 @@ export default function AuthPage() {
                       </div>
                       <div className="space-y-1">
                         <label className="text-[10px] font-bold text-slate-700 uppercase ml-1">Distrito</label>
-                        <select 
-                          value={registerData.district} 
-                          onChange={(e) => setRegisterData({...registerData, district: e.target.value})}
+                        <select
+                          value={registerData.district}
+                          onChange={(e) => setRegisterData({ ...registerData, district: e.target.value })}
                           className="w-full h-14 px-4 border-2 border-slate-100 rounded-2xl font-semibold focus:border-green-600 outline-none"
                         >
                           <option value="">Selecione o distrito</option>
                           {districts.map(d => <option key={d} value={d}>{d}</option>)}
                         </select>
                       </div>
-                      <Input label="Endereço Específico" icon={MapPin} value={registerData.address} onChange={(v) => setRegisterData({...registerData, address: v})} placeholder="Rua, número, bairro" className="h-14" />
-                      
+                      <Input label="Endereço Específico" icon={MapPin} value={registerData.address} onChange={(v) => setRegisterData({ ...registerData, address: v })} placeholder="Rua, número, bairro" className="h-14" />
+
                       <div className="flex gap-3 pt-4">
                         <button onClick={() => setRegStep(1)} className="flex-1 h-14 rounded-2xl border-2 border-slate-100 font-bold text-slate-500 hover:bg-slate-50 transition-colors">
                           Voltar
@@ -329,12 +466,12 @@ export default function AuthPage() {
                         </button>
                       </div>
                       <Input type={showPassword ? "text" : "password"} label="Confirmar Senha" icon={Lock} value={confirmPassword} onChange={setConfirmPassword} className="h-14" />
-                      
+
                       <div className="flex gap-3 pt-4">
                         <button onClick={() => setRegStep(2)} className="flex-1 h-14 rounded-2xl border-2 border-slate-100 font-bold text-slate-500">
                           Voltar
                         </button>
-                        <Button onClick={handleFinalAuth} loading={loading} disabled={!password || password !== confirmPassword} className="flex-[2] bg-green-600 text-white font-bold h-14 rounded-2xl shadow-lg">
+                        <Button onClick={handleCompleteRegistration} loading={loading} disabled={!password || password !== confirmPassword} className="flex-[2] bg-green-600 text-white font-bold h-14 rounded-2xl shadow-lg">
                           Finalizar e Entrar
                         </Button>
                       </div>
@@ -348,9 +485,9 @@ export default function AuthPage() {
                   <div className="bg-orange-50 p-3 rounded-xl inline-block">
                     <p className="text-xs text-orange-700 font-bold">Código enviado para +258 {phoneNumber}</p>
                   </div>
-                  <OTPInput length={6} value={otp} onChange={setOtp} />
+                  <OTPInput length={5} value={otp} onChange={setOtp} />
                   <div className="space-y-3">
-                    <Button onClick={handleFinalAuth} loading={loading} className="w-full h-14 bg-orange-500 text-white font-bold rounded-2xl shadow-lg">Verificar e Entrar</Button>
+                    <Button onClick={handleVerifyOTP} loading={loading} className="w-full h-14 bg-orange-500 text-white font-bold rounded-2xl shadow-lg">Verificar e Entrar</Button>
                     <button onClick={() => setStep("initial")} className="text-sm text-slate-400 font-bold hover:underline">Corrigir número</button>
                   </div>
                 </motion.div>
@@ -364,7 +501,7 @@ export default function AuthPage() {
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                   </div>
-                  <Button onClick={handleFinalAuth} loading={loading} className="w-full h-14 bg-green-600 text-white font-bold rounded-2xl shadow-lg">Acessar Conta</Button>
+                  <Button onClick={handlePasswordLogin} loading={loading} className="w-full h-14 bg-green-600 text-white font-bold rounded-2xl shadow-lg">Acessar Conta</Button>
                   <button onClick={() => setStep("initial")} className="w-full text-center text-sm font-bold text-slate-400">Esqueci minha senha</button>
                 </motion.div>
               )}

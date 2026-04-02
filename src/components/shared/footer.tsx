@@ -105,8 +105,8 @@ export default function Footer() {
                 <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/20">
                   <Mail size={18} className="text-[#8BC34A]" />
                 </div>
-                <Link href="mailto:contato@mozagro.co.mz" className="text-muted-foreground group-hover:text-foreground transition-colors">
-                  contato@mozagro.co.mz
+                <Link href="mailto:contato@kumela.org" className="text-muted-foreground group-hover:text-foreground transition-colors">
+                  contato@kumela.org
                 </Link>
               </li>
               <li className="flex items-center gap-3 group">

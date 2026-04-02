@@ -230,7 +230,7 @@ export default function PrivacyPolicyPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-background/80 font-medium">
                     <div className="flex items-center gap-3 bg-background/10 p-4 rounded-2xl">
                       <Mail size={20} className="text-[#2E7D32]" />
-                      <span>privacidade@mozagro.co.mz</span>
+                      <span>privacidade@kumela.org</span>
                     </div>
                     <div className="flex items-center gap-3 bg-background/10 p-4 rounded-2xl">
                       <Phone size={20} className="text-[#2E7D32]" />
@@ -242,7 +242,7 @@ export default function PrivacyPolicyPage() {
                     </div>
                   </div>
                   <Link 
-                    href="mailto:privacidade@mozagro.co.mz"
+                    href="mailto:privacidade@kumela.org"
                     className="inline-flex items-center gap-2 bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-green-900/20"
                   >
                     Falar com o Encarregado <ArrowUpRight size={18} />

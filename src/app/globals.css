@@ -48,7 +48,7 @@ body.text-enlarged h1 {
 :root {
   /* Fundo azulado suave para o modo claro */
   --background: oklch(0.95 0.01 200); 
-  --foreground: oklch(55.488% 0.18115 25.318);
+  --foreground: oklch(0.2 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);

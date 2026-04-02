@@ -214,7 +214,7 @@ export default function TermsOfUsePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 text-background/80 font-medium">
                     <div className="flex items-center gap-3 bg-background/10 p-4 rounded-2xl">
                       <Mail size={20} className="text-[#2E7D32]" />
-                      <span>contato@mozagro.co.mz</span>
+                      <span>contato@kumela.org</span>
                     </div>
                     <div className="flex items-center gap-3 bg-background/10 p-4 rounded-2xl">
                       <Phone size={20} className="text-[#2E7D32]" />
@@ -222,7 +222,7 @@ export default function TermsOfUsePage() {
                     </div>
                   </div>
                   <Link 
-                    href="mailto:contato@mozagro.co.mz"
+                    href="mailto:contato@kumela.org"
                     className="inline-flex items-center gap-2 bg-[#2E7D32] hover:bg-[#1B5E20] text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg"
                   >
                     Falar com Atendimento <ArrowUpRight size={18} />

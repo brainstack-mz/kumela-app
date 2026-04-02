@@ -55,12 +55,12 @@ const Video = () => {
           <p className="text-md sm:text-lg md:text-xl text-[#2E7D32] dark:text-green-600 mb-8 max-w-xl mx-auto md:mx-0">
             Para mais dicas, acesse nosso canal no YouTube:
             <a 
-              href="https://www.youtube.com/MozAgro" 
+              href="https://www.youtube.com/Kumela" 
               target="_blank" 
               rel="noopener noreferrer" 
               className="text-blue-500 dark:text-blue-400 hover:underline ml-2"
             >
-              youtube.com/MozAgro
+              youtube.com/Kumela
             </a>
           </p>
         </div>

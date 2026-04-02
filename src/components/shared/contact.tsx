@@ -177,7 +177,7 @@ export default function ContactsPage() {
                 <ContactInfo 
                   icon={Mail} 
                   title="Email" 
-                  content="contato@mozagro.co.mz" 
+                  content="contato@kumela.org" 
                 />
               </div>
               <p className="text-muted-foreground mt-10 leading-relaxed">
